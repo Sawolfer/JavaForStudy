@@ -1,16 +1,48 @@
 import java.security.cert.TrustAnchor;
 import java.util.List;
+import java.util.Scanner;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 class UniversityCourseManagementSystem {
-    public void main(String[] args) {
 
+    Scanner sc = new Scanner(System.in);
+    public void main(String[] args) {
+        String _currentString = sc.next();
+        fillInitialData();
+
+        switch (_currentString){
+            case ("course"):
+
+                break;
+            case ("student"):
+                String memberNameStud = sc.next();
+                Student _newStudent = new Student(memberNameStud);
+                break;
+            case ("professor"):
+                String memberNameProf = sc.next();
+                Professor _newProfessor = new Professor(memberNameProf);
+                break;
+            case ("enroll"):
+
+                break;
+            case ("drop"):
+                break;
+            case ("teach"):
+                break;
+            case ("exempt"):
+                break;
+            default:
+                Finish();
+                break;
+        }
+    }
+
+    public void Finish(){
+        System.exit(0);
     }
     public void fillInitialData(){
-
     }
-
 }
 
 abstract class UniversityMember {
@@ -65,7 +97,7 @@ class Professor extends UniversityMember{
         return true;
     }
     public boolean exempt(Course course){
-
+        
         return true;
     }
 }
@@ -91,7 +123,9 @@ class Course{
     }
 
     public boolean isFull(){
-
-        return true;
+        if (enrolledStudents.size() >= CAPASITY){
+            return true;
+        }
+        return false;
     }
 }
