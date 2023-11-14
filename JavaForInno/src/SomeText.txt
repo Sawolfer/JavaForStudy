@@ -1,0 +1,4 @@
+some information
+copy
+read
+paste
