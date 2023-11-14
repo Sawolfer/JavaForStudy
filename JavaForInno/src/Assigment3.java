@@ -25,7 +25,13 @@ abstract class UniversityMember {
 
 }
 
-class Student extends UniversityMember{
+interface Enrollable{
+
+    public boolean drop(Course course);
+    public boolean enroll(Course course);
+}
+
+class Student extends UniversityMember implements Enrollable{
     private static int MAX_ENROLLMENT;
     private List<Course> enrolledCourse;
 
@@ -33,6 +39,16 @@ class Student extends UniversityMember{
     public Student(String memberName){
         super(numberOfMembers++, memberName);
     }
+
+    public boolean drop(Course course){
+
+        return true;
+    }
+    public boolean enroll(Course course){
+
+        return true;
+    }
+
 
 }
 
