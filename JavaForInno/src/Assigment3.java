@@ -1,3 +1,4 @@
+import javax.jnlp.ClipboardService;
 import java.security.cert.TrustAnchor;
 import java.util.List;
 import java.util.Scanner;
@@ -42,6 +43,7 @@ class UniversityCourseManagementSystem {
         System.exit(0);
     }
     public void fillInitialData(){
+        
     }
 }
 
@@ -73,11 +75,21 @@ class Student extends UniversityMember implements Enrollable{
     }
 
     public boolean drop(Course course){
-
-        return true;
+        for (int i=0; i< enrolledCourse.size(); i++){
+            if (enrolledCourse.get(i) == course){
+                enrolledCourse.remove(course);
+                return true;
+            }
+        }
+        return false;
     }
     public boolean enroll(Course course){
-
+        for (int i=0; i< enrolledCourse.size(); i++){
+            if (course == enrolledCourse.get(i) || course.isFull() || enrolledCourse.size()>= MAX_ENROLLMENT){
+                return false;
+            }
+        }
+        enrolledCourse.add(course);
         return true;
     }
 
@@ -108,8 +120,8 @@ enum CourseLevel{
 }
 
 class Course{
-    private static int CAPASITY;
-    private static int numberOfCourse;
+    private static int CAPASITY =3;
+    private static int numberOfCourses;
 
     private int courseld;
     private String courseName;
