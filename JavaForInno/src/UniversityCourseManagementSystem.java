@@ -2,9 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-class UniversityCourseManagementSystem {
+
+public class UniversityCourseManagementSystem {
 
     static List<Student> students = new ArrayList<Student>();
     static List<Professor> professors = new ArrayList<Professor>();
@@ -30,6 +29,7 @@ class UniversityCourseManagementSystem {
                     }
                     if (CheckName(memberName)){
                         Course _newCourse = new Course(memberName, courseLevelEnum);
+                        System.out.printf("Added successfully");
                     }
                     break;
                 case ("student"):
@@ -89,7 +89,7 @@ class UniversityCourseManagementSystem {
                     }
                     break;
                 default:
-                    Finish();
+                    Finish("default");
                     break;
             }
         }
@@ -99,16 +99,19 @@ class UniversityCourseManagementSystem {
     private static boolean CheckName(String name){
         name = name.toLowerCase();
         for (int i=0; i<name.length(); i++){
+            if (name.charAt(i) == '_'){
+                continue;
+            }
             if ('a' > name.charAt(i) || name.charAt(i) >'z'){
-                Finish();
+                Finish(name);
 //                return false;
             }
         }
         return true;
     }
 
-    public static void Finish(){
-        System.out.println("Wrong Inputs");
+    public static void Finish( String what){
+        System.out.println("Wrong Inputs" + what);
         System.exit(0);
     }
     public static void fillInitialData(){
@@ -174,7 +177,7 @@ interface Enrollable{
 
 class Student extends UniversityMember implements Enrollable{
     private static int MAX_ENROLLMENT =3;
-    private List<Course> enrolledCourse;
+    private List<Course> enrolledCourse = new ArrayList<Course>();
 
 
     public Student(String memberName){
@@ -214,7 +217,7 @@ class Student extends UniversityMember implements Enrollable{
 
 class Professor extends UniversityMember{
     private static int MAX_LOAD = 2;
-    private List<Course> assigmentCourses;
+    private List<Course> assigmentCourses = new ArrayList<Course>();
 
 
     public Professor(String memberName){
@@ -256,7 +259,7 @@ class Course{
 
     private int courseld;
     private String courseName;
-    private List<Student> enrolledStudents;
+    private List<Student> enrolledStudents = new ArrayList<Student>();
     private CourseLevel courseLevel;
 
 
