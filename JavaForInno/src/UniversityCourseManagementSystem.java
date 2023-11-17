@@ -1,12 +1,9 @@
-import com.sun.xml.internal.ws.addressing.WsaTubeHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class UniversityCourseManagementSystem {
-
     static List<Student> students = new ArrayList<Student>();
     static List<Professor> professors = new ArrayList<Professor>();
     static List<Course> courses = new ArrayList<Course>();
@@ -17,9 +14,9 @@ public class UniversityCourseManagementSystem {
         int memberId;
         int courseId;
         String memberName;
-        boolean work = true;
-        while (work){
+        while (sc.hasNext()){
             String _currentString = sc.next();
+            _currentString = _currentString.toLowerCase();
             switch (_currentString){
                 case ("course"):
                     memberName = sc.next();
@@ -35,7 +32,7 @@ public class UniversityCourseManagementSystem {
                         }
                         else{
                             System.out.println("Wrong Inputs");
-                            Finish(courseLevel);
+                            Finish();
                         }
                     }
                     if (CheckName(memberName)){
@@ -71,8 +68,12 @@ public class UniversityCourseManagementSystem {
                     courseId = sc.nextInt();
                     for (Student man: students) {
                         if (man.memberId == memberId){
-                            if (man.enroll(courses.get(courseId--)));
-                            System.out.println("Enrolled successfully");
+                            if (!man.enroll(courses.get(courseId--))){
+                                Finish();
+                            }
+                            else{
+                                System.out.println("Enrolled successfully");
+                            }
                         }
                     }
                     break;
@@ -107,12 +108,23 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 default:
-                    Finish("default");
+                    System.out.println("Wrong Inputs");
+                    Finish();
                     break;
             }
         }
     }
 
+//    public static void PrintAll(){
+//        for (Course course: courses) {
+//            if(course.getCourseld()== 1){
+//                System.out.println(course.getCourseName());
+//            }
+//        }
+//        System.out.println(courses.size());
+//        System.out.println(students.size());
+//        System.out.println(professors.size());
+//    }
 
     private static boolean CheckName(String name){
         name = name.toLowerCase();
@@ -121,17 +133,22 @@ public class UniversityCourseManagementSystem {
                 continue;
             }
             if ('a' > name.charAt(i) || name.charAt(i) >'z'){
-                Finish(name);
+                System.out.println("Wrong Inputs");
+                Finish();
 //                return false;
             }
         }
         return true;
     }
 
-    public static void Finish( String what){
-        System.out.println("Wrong Inputs" + what);
+    public static void Finish(){
+//        System.out.println("Wrong Inputs" + what);
+
+//        PrintAll();
         System.exit(0);
+
     }
+
     public static void fillInitialData(){
         Course JavaBeginner = new Course("java_beginner", CourseLevel.BACHELOR);
         Course JavaIntermediate = new Course("java_intermediate", CourseLevel.BACHELOR);
@@ -181,6 +198,7 @@ abstract class UniversityMember {
     protected String memberName;
 
     public UniversityMember(int memberId, String memberName){
+        numberOfMembers++;
         this.memberId = memberId;
         this.memberName = memberName;
     }
@@ -200,7 +218,7 @@ class Student extends UniversityMember implements Enrollable{
 
 
     public Student(String memberName){
-        super(numberOfMembers++, memberName);
+        super(numberOfMembers+1, memberName);
     }
 
     public boolean drop(Course course){
@@ -215,16 +233,18 @@ class Student extends UniversityMember implements Enrollable{
         return false;
     }
     public boolean enroll(Course course){
-        for (int i=0; i< enrolledCourse.size(); i++){
-            if (course == enrolledCourse.get(i)){
+        for (Course enrolled: enrolledCourse){
+            if (enrolled.getCourseName().compareTo(course.getCourseName())==0 && (enrolled.getCourseLevel() == course.getCourseLevel())){
                 System.out.println("Student is already enrolled in this course");
                 return false;
             }
             else if(enrolledCourse.size()>= MAX_ENROLLMENT ){
                 System.out.println("Maximum enrollment is reached for the student");
+                return false;
             }
             else if (course.isFull()){
                 System.out.println("Course is full");
+                return false;
             }
 
         }
@@ -285,10 +305,11 @@ class Course{
 
 
     public Course(String courseName, CourseLevel couseLevel){
+        numberOfCourses++;
         this.courseName = courseName;
         this.courseLevel = couseLevel;
-        courseld = numberOfCourses++;
-        numberOfCourses++;
+        courseld = numberOfCourses;
+
     }
 
     public String getCourseName(){
@@ -296,6 +317,9 @@ class Course{
     }
     public CourseLevel getCourseLevel(){
         return courseLevel;
+    }
+    public int getCourseld(){
+        return courseld;
     }
     public void Drop(Student student){
         enrolledStudents.remove(student);
