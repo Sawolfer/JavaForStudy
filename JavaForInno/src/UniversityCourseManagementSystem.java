@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.addressing.WsaTubeHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -22,14 +24,30 @@ public class UniversityCourseManagementSystem {
                 case ("course"):
                     memberName = sc.next();
                     String courseLevel = sc.next();
-                    CourseLevel courseLevelEnum = CourseLevel.BACHELOR;
+                    CourseLevel courseLevelEnum = null;
                     if (CheckName(courseLevel)){
                         courseLevel = courseLevel.toLowerCase();
-                        courseLevelEnum = courseLevel == "master" ? CourseLevel.MASTER : CourseLevel.BACHELOR;
+                        if (courseLevel.compareTo("master")==0){
+                            courseLevelEnum = CourseLevel.MASTER;
+                        }
+                        else if(courseLevel.compareTo("bachelor")==0){
+                            courseLevelEnum = CourseLevel.BACHELOR;
+                        }
+                        else{
+                            System.out.println("Wrong Inputs");
+                            Finish(courseLevel);
+                        }
                     }
                     if (CheckName(memberName)){
                         Course _newCourse = new Course(memberName, courseLevelEnum);
-                        System.out.printf("Added successfully");
+                        for (Course other: courses) {
+                            if (other.getCourseName().compareTo(memberName)==0 && other.getCourseLevel() == courseLevelEnum){
+                                System.out.println("Course exists");
+                                return;
+                            }
+                        }
+                        courses.add(_newCourse);
+                        System.out.println("Added successfully");
                     }
                     break;
                 case ("student"):
@@ -167,6 +185,7 @@ abstract class UniversityMember {
         this.memberName = memberName;
     }
 
+
 }
 
 interface Enrollable{
@@ -188,6 +207,7 @@ class Student extends UniversityMember implements Enrollable{
         for (int i=0; i< enrolledCourse.size(); i++){
             if (enrolledCourse.get(i) == course){
                 enrolledCourse.remove(course);
+                course.Drop(this);
                 return true;
             }
         }
@@ -209,6 +229,7 @@ class Student extends UniversityMember implements Enrollable{
 
         }
         enrolledCourse.add(course);
+        course.Enroll(this);
         return true;
     }
 
@@ -266,7 +287,21 @@ class Course{
     public Course(String courseName, CourseLevel couseLevel){
         this.courseName = courseName;
         this.courseLevel = couseLevel;
+        courseld = numberOfCourses++;
+        numberOfCourses++;
+    }
 
+    public String getCourseName(){
+        return courseName;
+    }
+    public CourseLevel getCourseLevel(){
+        return courseLevel;
+    }
+    public void Drop(Student student){
+        enrolledStudents.remove(student);
+    }
+    public void Enroll(Student student){
+        enrolledStudents.add(student);
     }
 
     public boolean isFull(){
