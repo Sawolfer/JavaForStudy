@@ -51,18 +51,32 @@ public class UniversityCourseManagementSystem {
                     break;
                 case ("student"):
                     memberName = sc.nextLine();
-                    if (CheckName(memberName)){
+                    if (CheckName(memberName) && memberName.toLowerCase().compareTo("course")!=0 && memberName.toLowerCase().compareTo("student")!=0 &&
+                            memberName.toLowerCase().compareTo("professor")!=0 && memberName.toLowerCase().compareTo("enroll")!=0 &&
+                            memberName.toLowerCase().compareTo("drop")!=0 && memberName.toLowerCase().compareTo("exempt")!=0 &&
+                            memberName.toLowerCase().compareTo("teach")!=0){
                         Student _newStudent = new Student(memberName);
                         students.add(_newStudent);
                         System.out.println("Added successfully");
                     }
+                    else{
+                        System.out.println("Wrong Inputs");
+                        Finish();
+                    }
                     break;
                 case ("professor"):
                     memberName = sc.nextLine();
-                    if (CheckName(memberName)){
+                    if (CheckName(memberName) && memberName.toLowerCase().compareTo("course")!=0 && memberName.toLowerCase().compareTo("student")!=0 &&
+                            memberName.toLowerCase().compareTo("professor")!=0 && memberName.toLowerCase().compareTo("enroll")!=0 &&
+                            memberName.toLowerCase().compareTo("drop")!=0 && memberName.toLowerCase().compareTo("exempt")!=0 &&
+                            memberName.toLowerCase().compareTo("teach")!=0) {
                         Professor _newProfessor = new Professor(memberName);
                         professors.add(_newProfessor);
                         System.out.println("Added successfully");
+                    }
+                    else{
+                        System.out.println("Wrong Inputs");
+                        Finish();
                     }
                     break;
                 case ("enroll"):
@@ -99,23 +113,6 @@ public class UniversityCourseManagementSystem {
                         }
                     }
                     break;
-                case ("teach"):
-                    _currentString = sc.nextLine();
-                    memberId = Integer.parseInt(_currentString);
-                    _currentString = sc.nextLine();
-                    courseId = Integer.parseInt(_currentString);
-                    for (Professor man: professors){
-                        if (man.memberId == memberId){
-                            if (man.teach(courses.get(courseId-1))){
-                                System.out.println("Professor is successfully assigned to teach this course");
-                            }
-                            else{
-                                Finish();
-                                break;
-                            }
-                        }
-                    }
-                    break;
                 case ("exempt"):
                     _currentString = sc.nextLine();
                     memberId = Integer.parseInt(_currentString);
@@ -125,6 +122,23 @@ public class UniversityCourseManagementSystem {
                         if (man.memberId == memberId){
                             if (man.exempt(courses.get(courseId-1))){
                                 System.out.println("Professor is exempted");
+                            }
+                            else{
+                                Finish();
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case ("teach"):
+                    _currentString = sc.nextLine();
+                    memberId = Integer.parseInt(_currentString);
+                    _currentString = sc.nextLine();
+                    courseId = Integer.parseInt(_currentString);
+                    for (Professor man: professors){
+                        if (man.memberId == memberId){
+                            if (man.teach(courses.get(courseId-1))){
+                                System.out.println("Professor is successfully assigned to teach this course");
                             }
                             else{
                                 Finish();
@@ -155,7 +169,7 @@ public class UniversityCourseManagementSystem {
 
     public static boolean CheckOtherNames(String name){
         name = name.toLowerCase();
-        if (name.charAt(0)<'a' || name.charAt(name.length()-1)<'a'|| name.charAt(0)>'z'|| name.charAt(name.length()-1)>'z'){
+        if (name.charAt(0)<'a' || name.charAt(name.length()-1)<'a'|| name.charAt(0)>'z'|| name.charAt(name.length()-1)>'z' || name.contains("___")){
             System.out.println("Wrong Inputs");
             Finish();
         }
