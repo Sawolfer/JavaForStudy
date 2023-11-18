@@ -36,6 +36,7 @@ public class UniversityCourseManagementSystem {
                         }
                     }
                     if (CheckName(memberName)){
+                        memberName = memberName.toLowerCase();
                         Course _newCourse = new Course(memberName, courseLevelEnum);
                         for (Course other: courses) {
                             if (other.getCourseName().compareTo(memberName)==0 && other.getCourseLevel() == courseLevelEnum){
@@ -68,11 +69,12 @@ public class UniversityCourseManagementSystem {
                     courseId = sc.nextInt();
                     for (Student man: students) {
                         if (man.memberId == memberId){
-                            if (!man.enroll(courses.get(courseId--))){
+                            if (!man.enroll(courses.get(courseId-1))){
                                 Finish();
                             }
                             else{
                                 System.out.println("Enrolled successfully");
+                                break;
                             }
                         }
                     }
@@ -115,16 +117,16 @@ public class UniversityCourseManagementSystem {
         }
     }
 
-//    public static void PrintAll(){
-//        for (Course course: courses) {
-//            if(course.getCourseld()== 1){
-//                System.out.println(course.getCourseName());
-//            }
-//        }
-//        System.out.println(courses.size());
-//        System.out.println(students.size());
-//        System.out.println(professors.size());
-//    }
+    public static void PrintAll(){
+        for (Student course: students) {
+            if(course.memberName.compareTo("Alice")== 0){
+                System.out.println(course.memberId);
+            }
+        }
+        System.out.println(courses.size());
+        System.out.println(students.size());
+        System.out.println(professors.size());
+    }
 
     private static boolean CheckName(String name){
         name = name.toLowerCase();
@@ -144,7 +146,7 @@ public class UniversityCourseManagementSystem {
     public static void Finish(){
 //        System.out.println("Wrong Inputs" + what);
 
-//        PrintAll();
+        PrintAll();
         System.exit(0);
 
     }
@@ -166,10 +168,10 @@ public class UniversityCourseManagementSystem {
         courses.add(ComputerVision);
 
         Student Alice = new Student("Alice");
-        Student Bob = new Student("Bob");
-        Student Alex = new Student("Alex");
         students.add(Alice);
+        Student Bob = new Student("Bob");
         students.add(Bob);
+        Student Alex = new Student("Alex");
         students.add(Alex);
         Alice.enroll(JavaBeginner);
         Alice.enroll(JavaIntermediate);
@@ -215,10 +217,8 @@ interface Enrollable{
 class Student extends UniversityMember implements Enrollable{
     private static int MAX_ENROLLMENT =3;
     private List<Course> enrolledCourse = new ArrayList<Course>();
-
-
     public Student(String memberName){
-        super(numberOfMembers+1, memberName);
+        super(UniversityCourseManagementSystem.students.size()+1, memberName);
     }
 
     public boolean drop(Course course){
@@ -233,21 +233,24 @@ class Student extends UniversityMember implements Enrollable{
         return false;
     }
     public boolean enroll(Course course){
-        for (Course enrolled: enrolledCourse){
-            if (enrolled.getCourseName().compareTo(course.getCourseName())==0 && (enrolled.getCourseLevel() == course.getCourseLevel())){
+        for (Course enrolled: enrolledCourse) {
+            if (enrolled.getCourseName().compareTo(course.getCourseName()) == 0 && (enrolled.getCourseLevel() == course.getCourseLevel())) {
                 System.out.println("Student is already enrolled in this course");
                 return false;
             }
-            else if(enrolledCourse.size()>= MAX_ENROLLMENT ){
+        }
+        for (Course enrolled: enrolledCourse) {
+            if (enrolledCourse.size() >= MAX_ENROLLMENT) {
                 System.out.println("Maximum enrollment is reached for the student");
                 return false;
             }
-            else if (course.isFull()){
-                System.out.println("Course is full");
-                return false;
-            }
-
         }
+        if (course.isFull()){
+            System.out.println("Course is full");
+            return false;
+        }
+
+
         enrolledCourse.add(course);
         course.Enroll(this);
         return true;
