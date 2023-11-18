@@ -7,22 +7,23 @@ public class UniversityCourseManagementSystem {
     static List<Student> students = new ArrayList<Student>();
     static List<Professor> professors = new ArrayList<Professor>();
     static List<Course> courses = new ArrayList<Course>();
-    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         fillInitialData();
         int memberId;
         int courseId;
         String memberName;
-        while (sc.hasNext()){
-            String _currentString = sc.next();
-            _currentString = _currentString.toLowerCase();
+        Scanner sc = new Scanner(System.in);
+
+        while (sc.hasNextLine()){
+            String _currentString = sc.nextLine();
             switch (_currentString){
+                case(" "):Finish();
                 case ("course"):
-                    memberName = sc.next();
-                    String courseLevel = sc.next();
+                    memberName = sc.nextLine();
+                    String courseLevel = sc.nextLine();;
                     CourseLevel courseLevelEnum = null;
-                    if (CheckName(courseLevel)){
+                    if (CheckOtherNames(courseLevel)){
                         courseLevel = courseLevel.toLowerCase();
                         if (courseLevel.compareTo("master")==0){
                             courseLevelEnum = CourseLevel.MASTER;
@@ -35,7 +36,7 @@ public class UniversityCourseManagementSystem {
                             Finish();
                         }
                     }
-                    if (CheckName(memberName)){
+                    if (CheckOtherNames(memberName)){
                         memberName = memberName.toLowerCase();
                         Course _newCourse = new Course(memberName, courseLevelEnum);
                         for (Course other: courses) {
@@ -49,7 +50,7 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 case ("student"):
-                    memberName = sc.next();
+                    memberName = sc.nextLine();
                     if (CheckName(memberName)){
                         Student _newStudent = new Student(memberName);
                         students.add(_newStudent);
@@ -57,7 +58,7 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 case ("professor"):
-                    memberName = sc.next();
+                    memberName = sc.nextLine();
                     if (CheckName(memberName)){
                         Professor _newProfessor = new Professor(memberName);
                         professors.add(_newProfessor);
@@ -65,8 +66,10 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 case ("enroll"):
-                    memberId = sc.nextInt();
-                    courseId = sc.nextInt();
+                    _currentString = sc.nextLine();
+                    memberId = Integer.parseInt(_currentString);
+                    _currentString = sc.nextLine();
+                    courseId = Integer.parseInt(_currentString);
                     for (Student man: students) {
                         if (man.memberId == memberId){
                             if (!man.enroll(courses.get(courseId-1))){
@@ -80,13 +83,14 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 case ("drop"):
-                    memberId = sc.nextInt();
-                    courseId = sc.nextInt();
+                    _currentString = sc.nextLine();
+                    memberId = Integer.parseInt(_currentString);
+                    _currentString = sc.nextLine();
+                    courseId = Integer.parseInt(_currentString);
                     for (Student man: students) {
                         if (man.memberId == memberId){
                             if (man.drop(courses.get(courseId-1))){
                                 System.out.println("Dropped successfully");
-
                             }
                             else {
                                 Finish();
@@ -96,22 +100,36 @@ public class UniversityCourseManagementSystem {
                     }
                     break;
                 case ("teach"):
-                    memberId = sc.nextInt();
-                    courseId = sc.nextInt();
+                    _currentString = sc.nextLine();
+                    memberId = Integer.parseInt(_currentString);
+                    _currentString = sc.nextLine();
+                    courseId = Integer.parseInt(_currentString);
                     for (Professor man: professors){
                         if (man.memberId == memberId){
-                            if (man.teach(courses.get(courseId--)));
-                            System.out.println("Professor is successfully assigned to teach this course");
+                            if (man.teach(courses.get(courseId-1))){
+                                System.out.println("Professor is successfully assigned to teach this course");
+                            }
+                            else{
+                                Finish();
+                                break;
+                            }
                         }
                     }
                     break;
                 case ("exempt"):
-                    memberId = sc.nextInt();
-                    courseId = sc.nextInt();
+                    _currentString = sc.nextLine();
+                    memberId = Integer.parseInt(_currentString);
+                    _currentString = sc.nextLine();
+                    courseId = Integer.parseInt(_currentString);
                     for (Professor man: professors){
                         if (man.memberId == memberId){
-                            if (man.exempt(courses.get(courseId--)));
-                            System.out.println("Professor is exempted");
+                            if (man.exempt(courses.get(courseId-1))){
+                                System.out.println("Professor is exempted");
+                            }
+                            else{
+                                Finish();
+                                break;
+                            }
                         }
                     }
                     break;
@@ -121,21 +139,26 @@ public class UniversityCourseManagementSystem {
                     break;
             }
         }
-    }
-
-    public static void PrintAll(){
-//        for (Course course: courses) {
-//            if(course.getCourseld()== 2){
-//                System.out.println(course.getCourseName());
-//            }
-//        }
-//        System.out.println(students.get(0));
-//        System.out.println(students.size());
-//        System.out.println(professors.size());
+        Finish();
     }
 
     private static boolean CheckName(String name){
         name = name.toLowerCase();
+        for (int i=0; i<name.length(); i++){
+            if ('a' > name.charAt(i) || name.charAt(i) >'z'){
+                System.out.println("Wrong Inputs");
+                Finish();
+            }
+        }
+        return true;
+    }
+
+    public static boolean CheckOtherNames(String name){
+        name = name.toLowerCase();
+        if (name.charAt(0)<'a' || name.charAt(name.length()-1)<'a'|| name.charAt(0)>'z'|| name.charAt(name.length()-1)>'z'){
+            System.out.println("Wrong Inputs");
+            Finish();
+        }
         for (int i=0; i<name.length(); i++){
             if (name.charAt(i) == '_'){
                 continue;
@@ -143,7 +166,6 @@ public class UniversityCourseManagementSystem {
             if ('a' > name.charAt(i) || name.charAt(i) >'z'){
                 System.out.println("Wrong Inputs");
                 Finish();
-//                return false;
             }
         }
         return true;
@@ -152,7 +174,6 @@ public class UniversityCourseManagementSystem {
     public static void Finish(){
 //        System.out.println("Wrong Inputs" + what);
 
-        PrintAll();
         System.exit(0);
 
     }
@@ -224,7 +245,7 @@ class Student extends UniversityMember implements Enrollable{
     private static int MAX_ENROLLMENT =3;
     private List<Course> enrolledCourse = new ArrayList<Course>();
     public Student(String memberName){
-        super(UniversityCourseManagementSystem.students.size()+1, memberName);
+        super(numberOfMembers+1, memberName);
     }
 
     public boolean drop(Course course){
@@ -269,29 +290,31 @@ class Professor extends UniversityMember{
 
 
     public Professor(String memberName){
-        super(numberOfMembers++, memberName);
+        super(numberOfMembers+1, memberName);
     }
     public boolean teach(Course course){
-        for (int i =0 ; i< assigmentCourses.size(); i++){
-            if (course == assigmentCourses.get(i)){
+        if(assigmentCourses.size()>=MAX_LOAD){
+            System.out.println("Professor's load is complete");
+            return false;
+        }
+        for (Course assigned: assigmentCourses){
+            if (assigned.getCourseld() == course.getCourseld()){
                 System.out.println("Professor is already teaching this course");
                 return false;
             }
-            else if(assigmentCourses.size()>=MAX_LOAD){
-                System.out.println("Professor's load is complete");
-                return false;
-            }
+
         }
         assigmentCourses.add(course);
         return true;
     }
     public boolean exempt(Course course){
-        for(int i =0; i<assigmentCourses.size(); i++){
-            if(course == assigmentCourses.get(i)){
+        for(Course assigned : assigmentCourses){
+            if(course.getCourseld() == assigned.getCourseld()){
                 assigmentCourses.remove(course);
                 return true;
             }
         }
+        System.out.println("Professor is not teaching this course");
         return false;
     }
 }
