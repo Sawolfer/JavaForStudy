@@ -84,8 +84,14 @@ public class UniversityCourseManagementSystem {
                     courseId = sc.nextInt();
                     for (Student man: students) {
                         if (man.memberId == memberId){
-                            if (man.drop(courses.get(courseId--)));
-                            System.out.println("Dropped successfully");
+                            if (man.drop(courses.get(courseId-1))){
+                                System.out.println("Dropped successfully");
+
+                            }
+                            else {
+                                Finish();
+                                break;
+                            }
                         }
                     }
                     break;
@@ -118,14 +124,14 @@ public class UniversityCourseManagementSystem {
     }
 
     public static void PrintAll(){
-        for (Student course: students) {
-            if(course.memberName.compareTo("Alice")== 0){
-                System.out.println(course.memberId);
-            }
-        }
-        System.out.println(courses.size());
-        System.out.println(students.size());
-        System.out.println(professors.size());
+//        for (Course course: courses) {
+//            if(course.getCourseld()== 2){
+//                System.out.println(course.getCourseName());
+//            }
+//        }
+//        System.out.println(students.get(0));
+//        System.out.println(students.size());
+//        System.out.println(professors.size());
     }
 
     private static boolean CheckName(String name){
@@ -153,18 +159,18 @@ public class UniversityCourseManagementSystem {
 
     public static void fillInitialData(){
         Course JavaBeginner = new Course("java_beginner", CourseLevel.BACHELOR);
-        Course JavaIntermediate = new Course("java_intermediate", CourseLevel.BACHELOR);
-        Course PythonBasic = new Course("python_basics", CourseLevel.BACHELOR);
-        Course Algorithms = new Course("algorithms", CourseLevel.MASTER);
-        Course AdvancedProgramming = new Course("advanced_programming", CourseLevel.MASTER);
-        Course MathematicalAnalysis = new Course("mathematical_analysis", CourseLevel.MASTER);
-        Course ComputerVision = new Course("computer_vision", CourseLevel.MASTER);
         courses.add(JavaBeginner);
+        Course JavaIntermediate = new Course("java_intermediate", CourseLevel.BACHELOR);
         courses.add(JavaIntermediate);
+        Course PythonBasic = new Course("python_basics", CourseLevel.BACHELOR);
         courses.add(PythonBasic);
+        Course Algorithms = new Course("algorithms", CourseLevel.MASTER);
         courses.add(Algorithms);
+        Course AdvancedProgramming = new Course("advanced_programming", CourseLevel.MASTER);
         courses.add(AdvancedProgramming);
+        Course MathematicalAnalysis = new Course("mathematical_analysis", CourseLevel.MASTER);
         courses.add(MathematicalAnalysis);
+        Course ComputerVision = new Course("computer_vision", CourseLevel.MASTER);
         courses.add(ComputerVision);
 
         Student Alice = new Student("Alice");
@@ -181,10 +187,10 @@ public class UniversityCourseManagementSystem {
         Alex.enroll(AdvancedProgramming);
 
         Professor Ali = new Professor("Ali");
-        Professor Ahmed = new Professor("Ahmed");
-        Professor Andrey = new Professor("Andrey");
         professors.add(Ali);
+        Professor Ahmed = new Professor("Ahmed");
         professors.add(Ahmed);
+        Professor Andrey = new Professor("Andrey");
         professors.add(Andrey);
         Ali.teach(JavaBeginner);
         Ali.teach(JavaIntermediate);
@@ -222,8 +228,8 @@ class Student extends UniversityMember implements Enrollable{
     }
 
     public boolean drop(Course course){
-        for (int i=0; i< enrolledCourse.size(); i++){
-            if (enrolledCourse.get(i) == course){
+        for (Course enrolled: enrolledCourse){
+            if (enrolled.getCourseld() == course.getCourseld()){
                 enrolledCourse.remove(course);
                 course.Drop(this);
                 return true;
@@ -234,16 +240,14 @@ class Student extends UniversityMember implements Enrollable{
     }
     public boolean enroll(Course course){
         for (Course enrolled: enrolledCourse) {
-            if (enrolled.getCourseName().compareTo(course.getCourseName()) == 0 && (enrolled.getCourseLevel() == course.getCourseLevel())) {
+            if (enrolled.getCourseld() == course.getCourseld()) {
                 System.out.println("Student is already enrolled in this course");
                 return false;
             }
         }
-        for (Course enrolled: enrolledCourse) {
-            if (enrolledCourse.size() >= MAX_ENROLLMENT) {
-                System.out.println("Maximum enrollment is reached for the student");
-                return false;
-            }
+        if (enrolledCourse.size() >= MAX_ENROLLMENT) {
+            System.out.println("Maximum enrollment is reached for the student");
+            return false;
         }
         if (course.isFull()){
             System.out.println("Course is full");
