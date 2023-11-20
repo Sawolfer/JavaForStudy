@@ -12,8 +12,8 @@ public class UniversityCourseManagementSystem {
     private static int courseId = 0;
     private static boolean found = false;
     private static String memberName;
-    public static Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
         fillInitialData();
         while (sc.hasNextLine()) {
             String currentString = sc.nextLine();
@@ -53,8 +53,6 @@ public class UniversityCourseManagementSystem {
                         Student newStudent = new Student(memberName);
                         students.add(newStudent);
                         System.out.println("Added successfully");
-                    } else {
-                        finish("Wrong inputs");
                     }
                     break;
                 case ("professor"):
@@ -63,8 +61,6 @@ public class UniversityCourseManagementSystem {
                         Professor newProfessor = new Professor(memberName);
                         professors.add(newProfessor);
                         System.out.println("Added successfully");
-                    } else {
-                        finish("Wrong inputs");
                     }
                     break;
                 case ("enroll"):
@@ -105,9 +101,6 @@ public class UniversityCourseManagementSystem {
                                     if (man.drop(courses.get(courseId - 1))) {
                                         found = true;
                                         System.out.println("Dropped successfully");
-                                    } else {
-                                        finish("");
-                                        break;
                                     }
                                 }
                             }
@@ -130,9 +123,6 @@ public class UniversityCourseManagementSystem {
                                     if (man.exempt(courses.get(courseId - 1))) {
                                         found = true;
                                         System.out.println("Professor is exempted");
-                                    } else {
-                                        finish("");
-                                        break;
                                     }
                                 }
                             }
@@ -155,9 +145,6 @@ public class UniversityCourseManagementSystem {
                                     if (man.teach(courses.get(courseId - 1))) {
                                         found = true;
                                         System.out.println("Professor is successfully assigned to teach this course");
-                                    } else {
-                                        finish("");
-                                        break;
                                     }
                                 }
                             }
@@ -192,28 +179,28 @@ public class UniversityCourseManagementSystem {
         try {
             memberId = Integer.parseInt(id);
         } catch (NumberFormatException e) {
-            System.out.println("Wrong inputs");
-            finish("");
+            finish("Wrong inputs");
         }
         if (memberId < 1 || memberId > (students.size() + professors.size())) {
-            System.out.println("Wrong inputs");
-            finish("");
+            finish("Wrong inputs");
         }
         return true;
     }
     public static boolean checkOtherNames(String name) {
         name = name.toLowerCase();
-        List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach");
-        if (name.contains("___") || name.charAt(0) == '_' || name.charAt(name.length() - 1) == '_') {
-            System.out.println("Wrong inputs");
-            finish("");
-        }
+        List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach", "");
+
         for (String item : banned) {
             if (name.compareTo(item) == 0) {
                 System.out.println("Wrong inputs");
                 finish("");
             }
         }
+        if (name.contains("___") || name.charAt(0) == '_' || name.charAt(name.length() - 1) == '_') {
+            System.out.println("Wrong inputs");
+            finish("");
+        }
+
         for (int i = 0; i < name.length(); i++) {
             if (name.charAt(i) == '_') {
                 continue;
@@ -275,7 +262,7 @@ public class UniversityCourseManagementSystem {
 }
 
 abstract class UniversityMember {
-    public static int numberOfMembers;
+    protected static int numberOfMembers;
     protected int memberId;
     protected String memberName;
 
@@ -295,7 +282,7 @@ interface Enrollable {
 }
 
 class Student extends UniversityMember implements Enrollable {
-    private final int MAX_ENROLLMENT = 3;
+    private static final int MAX_ENROLLMENT = 3;
     private List<Course> enrolledCourse = new ArrayList<Course>();
     public Student(String memberName) {
         super(numberOfMembers + 1, memberName);
@@ -309,22 +296,22 @@ class Student extends UniversityMember implements Enrollable {
                 return true;
             }
         }
-        System.out.println("Student is not enrolled in this course");
+        UniversityCourseManagementSystem.finish("Student is not enrolled in this course");
         return false;
     }
     public boolean enroll(Course course) {
         for (Course enrolled: enrolledCourse) {
             if (enrolled.getCourseld() == course.getCourseld()) {
-                System.out.println("Student is already enrolled in this course");
+                UniversityCourseManagementSystem.finish("Student is already enrolled in this course");
                 return false;
             }
         }
         if (enrolledCourse.size() >= MAX_ENROLLMENT) {
-            System.out.println("Maximum enrollment is reached for the student");
+            UniversityCourseManagementSystem.finish("Maximum enrollment is reached for the student");
             return false;
         }
         if (course.isFull()) {
-            System.out.println("Course is full");
+            UniversityCourseManagementSystem.finish("Course is full");
             return false;
         }
 
@@ -338,7 +325,7 @@ class Student extends UniversityMember implements Enrollable {
 }
 
 class Professor extends UniversityMember {
-    private static int MAX_LOAD = 2;
+    private static final int MAX_LOAD = 2;
     private List<Course> assigmentCourses = new ArrayList<Course>();
 
 
@@ -347,12 +334,12 @@ class Professor extends UniversityMember {
     }
     public boolean teach(Course course) {
         if (assigmentCourses.size() >= MAX_LOAD) {
-            System.out.println("Professor's load is complete");
+            UniversityCourseManagementSystem.finish("Professor's load is complete");
             return false;
         }
         for (Course assigned: assigmentCourses) {
             if (assigned.getCourseld() == course.getCourseld()) {
-                System.out.println("Professor is already teaching this course");
+                UniversityCourseManagementSystem.finish("Professor is already teaching this course");
                 return false;
             }
 
@@ -367,7 +354,7 @@ class Professor extends UniversityMember {
                 return true;
             }
         }
-        System.out.println("Professor is not teaching this course");
+        UniversityCourseManagementSystem.finish("Professor is not teaching this course");
         return false;
     }
 }
@@ -378,7 +365,7 @@ enum CourseLevel {
 }
 
 class Course {
-    private final int CAPACITY = 3;
+    private static final int CAPACITY = 3;
     private static int numberOfCourses;
 
     private int courseld;
