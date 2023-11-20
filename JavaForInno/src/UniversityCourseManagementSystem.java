@@ -8,28 +8,24 @@ public class UniversityCourseManagementSystem {
     private static List<Student> students = new ArrayList<Student>();
     private static List<Professor> professors = new ArrayList<Professor>();
     private static List<Course> courses = new ArrayList<Course>();
-
+    private static int memberId = 0;
+    private static int courseId = 0;
+    private static boolean found = false;
+    private static String memberName;
+    public static Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         fillInitialData();
-        int memberId = 0;
-        int courseId = 0;
-        boolean found = false;
-        String memberName;
-        Scanner sc = new Scanner(System.in);
-
         while (sc.hasNextLine()) {
             String currentString = sc.nextLine();
             switch (currentString) {
-                case (" "):
-                    finish();
+                case (" "): finish("");
                 case ("course"):
                     memberName = sc.nextLine();
                     if (checkOtherNames(memberName) && !(memberName.compareTo("") == 0)) {
                         memberName = memberName.toLowerCase();
                         for (Course other: courses) {
                             if (other.getCourseName().compareTo(memberName) == 0) {
-                                System.out.println("Course exists");
-                                finish();
+                                finish("Course exists");
                             }
                         }
                         String courseLevel = sc.nextLine();
@@ -45,12 +41,10 @@ public class UniversityCourseManagementSystem {
                             System.out.println("Added successfully");
                             break;
                         } else {
-                            System.out.println("Wrong inputs");
-                            finish();
+                            finish("Wrong inputs");
                         }
                     } else {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 case ("student"):
@@ -60,8 +54,7 @@ public class UniversityCourseManagementSystem {
                         students.add(newStudent);
                         System.out.println("Added successfully");
                     } else {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 case ("professor"):
@@ -71,164 +64,140 @@ public class UniversityCourseManagementSystem {
                         professors.add(newProfessor);
                         System.out.println("Added successfully");
                     } else {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 case ("enroll"):
                     found = false;
                     currentString = sc.nextLine();
-                    if (checkId(currentString)) {
+                    if (checkMemberId(currentString)) {
                         memberId = Integer.parseInt(currentString);
                         for (Student man: students) {
                             if (man.memberId == memberId) {
                                 currentString = sc.nextLine();
-                                try {
+                                if (checkCourseId(currentString)) {
                                     courseId = Integer.parseInt(currentString);
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
+                                    if (!man.enroll(courses.get(courseId - 1))) {
+                                        finish("");
+                                    } else {
+                                        found = true;
+                                        System.out.println("Enrolled successfully");
+                                        break;
+                                    }
                                 }
-                                if (courseId > courses.size() || courseId < 1) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (!man.enroll(courses.get(courseId - 1))) {
-                                    finish();
-                                } else {
-                                    found = true;
-                                    System.out.println("Enrolled successfully");
-                                    break;
-                                }
-
                             }
                         }
                     }
                     if (!found) {
-                        System.out.println("Wrong inputs");
-                        finish();
+                         finish("Wrong inputs");
                     }
                     break;
                 case ("drop"):
                     found = false;
                     currentString = sc.nextLine();
-                    if (checkId(currentString)) {
+                    if (checkMemberId(currentString)) {
                         memberId = Integer.parseInt(currentString);
                         for (Student man: students) {
                             if (man.memberId == memberId) {
                                 currentString = sc.nextLine();
-                                try {
+                                if (checkCourseId(currentString)) {
                                     courseId = Integer.parseInt(currentString);
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (courseId > courses.size() || courseId < 1) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (man.drop(courses.get(courseId - 1))) {
-                                    found = true;
-                                    System.out.println("Dropped successfully");
-                                } else {
-                                    finish();
-                                    break;
+                                    if (man.drop(courses.get(courseId - 1))) {
+                                        found = true;
+                                        System.out.println("Dropped successfully");
+                                    } else {
+                                        finish("");
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                     if (!found) {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 case ("exempt"):
                     found = false;
                     currentString = sc.nextLine();
-                    if (checkId(currentString)) {
+                    if (checkMemberId(currentString)) {
                         memberId = Integer.parseInt(currentString);
                         for (Professor man: professors) {
                             if (man.memberId == memberId) {
                                 currentString = sc.nextLine();
-                                try {
+                                if (checkCourseId(currentString)) {
                                     courseId = Integer.parseInt(currentString);
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (courseId > courses.size() || courseId < 1) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (man.exempt(courses.get(courseId - 1))) {
-                                    found = true;
-                                    System.out.println("Professor is exempted");
-                                } else {
-                                    finish();
-                                    break;
+                                    if (man.exempt(courses.get(courseId - 1))) {
+                                        found = true;
+                                        System.out.println("Professor is exempted");
+                                    } else {
+                                        finish("");
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                     if (!found) {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 case ("teach"):
                     found = false;
                     currentString = sc.nextLine();
-                    if (checkId(currentString)) {
+                    if (checkMemberId(currentString)) {
                         memberId = Integer.parseInt(currentString);
                         for (Professor man: professors) {
                             if (man.memberId == memberId) {
-
                                 currentString = sc.nextLine();
-                                try {
+                                if (checkCourseId(currentString)) {
                                     courseId = Integer.parseInt(currentString);
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
+                                    if (man.teach(courses.get(courseId - 1))) {
+                                        found = true;
+                                        System.out.println("Professor is successfully assigned to teach this course");
+                                    } else {
+                                        finish("");
+                                        break;
+                                    }
                                 }
-                                if (courseId > courses.size() || courseId < 1) {
-                                    System.out.println("Wrong inputs");
-                                    finish();
-                                }
-                                if (man.teach(courses.get(courseId - 1))) {
-                                    found = true;
-                                    System.out.println("Professor is successfully assigned to teach this course");
-                                } else {
-                                    finish();
-                                    break;
-                                }
-
                             }
                         }
                     }
                     if (!found) {
-                        System.out.println("Wrong inputs");
-                        finish();
+                        finish("Wrong inputs");
                     }
                     break;
                 default:
-                    System.out.println("Wrong inputs");
-                    finish();
+                    finish("Wrong inputs");
                     break;
             }
         }
-        finish();
+        finish("");
     }
-    public static boolean checkId(String id) {
+
+    public static boolean checkCourseId(String id) {
+        int courseId = 0;
+        try {
+            courseId = Integer.parseInt(id);
+        } catch (NumberFormatException e) {
+            finish("Wrong inputs");
+        }
+        if (courseId > courses.size() || courseId < 1) {
+            finish("Wrong inputs");
+        }
+        return true;
+    }
+    public static boolean checkMemberId(String id) {
         int memberId = 0;
         try {
             memberId = Integer.parseInt(id);
         } catch (NumberFormatException e) {
             System.out.println("Wrong inputs");
-            finish();
+            finish("");
         }
         if (memberId < 1 || memberId > (students.size() + professors.size())) {
             System.out.println("Wrong inputs");
-            finish();
+            finish("");
         }
         return true;
     }
@@ -237,12 +206,12 @@ public class UniversityCourseManagementSystem {
         List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach");
         if (name.contains("___") || name.charAt(0) == '_' || name.charAt(name.length() - 1) == '_') {
             System.out.println("Wrong inputs");
-            finish();
+            finish("");
         }
         for (String item : banned) {
             if (name.compareTo(item) == 0) {
                 System.out.println("Wrong inputs");
-                finish();
+                finish("");
             }
         }
         for (int i = 0; i < name.length(); i++) {
@@ -251,13 +220,14 @@ public class UniversityCourseManagementSystem {
             }
             if ('a' > name.charAt(i) || name.charAt(i) > 'z') {
                 System.out.println("Wrong inputs");
-                finish();
+                finish("");
             }
         }
         return true;
     }
 
-    public static void finish() {
+    public static void finish(String typeOfError) {
+        System.out.println(typeOfError);
         System.exit(0);
     }
 
