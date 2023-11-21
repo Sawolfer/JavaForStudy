@@ -14,6 +14,7 @@ public class UniversityCourseManagementSystem {
     private static String memberName;
 
 
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         fillInitialData();
@@ -164,6 +165,17 @@ public class UniversityCourseManagementSystem {
         finish("");
     }
 
+    /**
+     * first of all we have a tmp variable course id
+     * we try to parse string to int by case try/catch
+     * if string is not equal to int we use method finish and send type of error - Wrong inputs
+     * next we check that id is greater than 0 and less than length of courses list
+     * if all tests are true we return true
+     * else in one of steps we throw exception
+     *
+     * @param id string that we send to check
+     * @return   true if the course id is valid, false otherwise
+     */
     public static boolean checkCourseId(String id) {
         int courseId = 0;
         try {
@@ -176,6 +188,18 @@ public class UniversityCourseManagementSystem {
         }
         return true;
     }
+
+    /**
+     *  first of all we have a tmp variable member id
+     *  we try to parse string to int by case try/catch
+     *  if string is not equal to int we use method finish and send type of error - Wrong inputs
+     *  next we check that id is greater than 0 and less than length of professors and students list
+     *  if all tests are true we return true
+     *  else in one of steps we throw exception
+     *
+     * @param id string that we send to check
+     * @return   true if the course id is valid, false otherwise
+     */
     public static boolean checkMemberId(String id) {
         int memberId = 0;
         try {
@@ -304,7 +328,7 @@ interface Enrollable {
 
 class Student extends UniversityMember implements Enrollable {
     private static final int MAX_ENROLLMENT = 3;
-    private List<Course> enrolledCourse = new ArrayList<Course>();
+    private final List<Course> enrolledCourse = new ArrayList<Course>();
     public Student(String memberName) {
         super(numberOfMembers + 1, memberName);
     }
@@ -347,7 +371,7 @@ class Student extends UniversityMember implements Enrollable {
 
 class Professor extends UniversityMember {
     private static final int MAX_LOAD = 2;
-    private List<Course> assigmentCourses = new ArrayList<Course>();
+    private final List<Course> assigmentCourses = new ArrayList<Course>();
 
 
     public Professor(String memberName) {
