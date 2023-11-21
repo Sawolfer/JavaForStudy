@@ -12,6 +12,8 @@ public class UniversityCourseManagementSystem {
     private static int courseId = 0;
     private static boolean found = false;
     private static String memberName;
+
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         fillInitialData();
@@ -49,7 +51,7 @@ public class UniversityCourseManagementSystem {
                     break;
                 case ("student"):
                     memberName = sc.nextLine();
-                    if (checkOtherNames(memberName) && !(memberName.compareTo("") == 0)) {
+                    if (chechNames(memberName) && !(memberName.compareTo("") == 0)) {
                         Student newStudent = new Student(memberName);
                         students.add(newStudent);
                         System.out.println("Added successfully");
@@ -57,7 +59,7 @@ public class UniversityCourseManagementSystem {
                     break;
                 case ("professor"):
                     memberName = sc.nextLine();
-                    if (checkOtherNames(memberName) &&  !(memberName.compareTo("") == 0)) {
+                    if (chechNames(memberName) &&  !(memberName.compareTo("") == 0)) {
                         Professor newProfessor = new Professor(memberName);
                         professors.add(newProfessor);
                         System.out.println("Added successfully");
@@ -183,6 +185,25 @@ public class UniversityCourseManagementSystem {
         }
         if (memberId < 1 || memberId > (students.size() + professors.size())) {
             finish("Wrong inputs");
+        }
+        return true;
+    }
+
+    public static boolean chechNames(String name) {
+        name = name.toLowerCase();
+        List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach", "");
+
+        for (String item : banned) {
+            if (name.compareTo(item) == 0) {
+                System.out.println("Wrong inputs");
+                finish("");
+            }
+        }
+        for (int i = 0; i < name.length(); i++) {
+            if ('a' > name.charAt(i) || name.charAt(i) > 'z') {
+                System.out.println("Wrong inputs");
+                finish("");
+            }
         }
         return true;
     }
