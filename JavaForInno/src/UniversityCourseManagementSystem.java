@@ -3,18 +3,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-
+/**
+ * the main class that implements reading input string, working with them, checking its validity and running commands
+ */
 public class UniversityCourseManagementSystem {
+    /**
+     * list of all students
+     * list of all professors
+     * list of all courses
+     */
     private static List<Student> students = new ArrayList<Student>();
     private static List<Professor> professors = new ArrayList<Professor>();
     private static List<Course> courses = new ArrayList<Course>();
+    /**
+     * int variable member id that will be used in different parts of main like tmp id of course/student/professor
+     * int variable course id that will be changed in different parts of main like tmp id of course/student/professor
+     * boolean found if we found a particular student/professor in the list of students/professors
+     * string member name that will be used in different parts of main like tmp name of course/student/professor
+     */
     private static int memberId = 0;
     private static int courseId = 0;
     private static boolean found = false;
     private static String memberName;
 
 
-
+    /**
+     * function main work until it has error
+     * it's start function to initialise all data
+     * it gets string and if it's correct command, implement method which we send
+     * it checks all incoming values for correctness and throw exception in case of error
+     *
+     * @param args input arguments
+     */
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         fillInitialData();
@@ -166,12 +186,8 @@ public class UniversityCourseManagementSystem {
     }
 
     /**
-     * first of all we have a tmp variable course id
-     * we try to parse string to int by case try/catch
-     * if string is not equal to int we use method finish and send type of error - Wrong inputs
-     * next we check that id is greater than 0 and less than length of courses list
-     * if all tests are true we return true
-     * else in one of steps we throw exception
+     * this method get id as String and try convert to int
+     * it also checks if the course id exist and suitable for conditions
      *
      * @param id string that we send to check
      * @return   true if the course id is valid, false otherwise
@@ -190,15 +206,11 @@ public class UniversityCourseManagementSystem {
     }
 
     /**
-     *  first of all we have a tmp variable member id
-     *  we try to parse string to int by case try/catch
-     *  if string is not equal to int we use method finish and send type of error - Wrong inputs
-     *  next we check that id is greater than 0 and less than length of professors and students list
-     *  if all tests are true we return true
-     *  else in one of steps we throw exception
+     * this method get id as String and try convert to int
+     * it also checks if the member id exist and suitable for conditions
      *
      * @param id string that we send to check
-     * @return   true if the course id is valid, false otherwise
+     * @return   true if the member id is correct, false otherwise
      */
     public static boolean checkMemberId(String id) {
         int memberId = 0;
@@ -213,37 +225,46 @@ public class UniversityCourseManagementSystem {
         return true;
     }
 
+    /**
+     * check that name is exist, has only english letters and doesn't equal to names of other commands or null string
+     * @param name string that we send to validate
+     * @return turn if
+     */
     public static boolean chechNames(String name) {
         name = name.toLowerCase();
         List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach", "");
 
         for (String item : banned) {
             if (name.compareTo(item) == 0) {
-                System.out.println("Wrong inputs");
-                finish("");
+                finish("Wrong inputs");
             }
         }
         for (int i = 0; i < name.length(); i++) {
             if ('a' > name.charAt(i) || name.charAt(i) > 'z') {
-                System.out.println("Wrong inputs");
-                finish("");
+                finish("Wrong inputs");
             }
         }
         return true;
     }
+
+    /**
+     * check that name is exist, consist only english letters, doesn't have ___,
+     * doesn't equal to names of other commands and also doesn't have _ as the first or last symbol
+     *
+     * @param name string that we send to validate
+     * @return true if name is correct
+     */
     public static boolean checkOtherNames(String name) {
         name = name.toLowerCase();
         List<String> banned = Arrays.asList("course", "student", "professor", "enroll", "drop", "exempt", "teach", "");
 
         for (String item : banned) {
             if (name.compareTo(item) == 0) {
-                System.out.println("Wrong inputs");
-                finish("");
+                finish("Wrong inputs");
             }
         }
         if (name.contains("___") || name.charAt(0) == '_' || name.charAt(name.length() - 1) == '_') {
-            System.out.println("Wrong inputs");
-            finish("");
+            finish("Wrong inputs");
         }
 
         for (int i = 0; i < name.length(); i++) {
@@ -251,18 +272,24 @@ public class UniversityCourseManagementSystem {
                 continue;
             }
             if ('a' > name.charAt(i) || name.charAt(i) > 'z') {
-                System.out.println("Wrong inputs");
-                finish("");
+                finish("Wrong inputs");
             }
         }
         return true;
     }
 
+    /**
+     * exit program with throwing exception
+     * @param typeOfError message with type of error
+     */
     public static void finish(String typeOfError) {
         System.out.println(typeOfError);
         System.exit(0);
     }
 
+    /**
+     * initialise the data
+     */
     public static void fillInitialData() {
         Course javaBeginner = new Course("java_beginner", CourseLevel.BACHELOR);
         courses.add(javaBeginner);
@@ -306,33 +333,57 @@ public class UniversityCourseManagementSystem {
     }
 }
 
+/**
+ * The UniversityMember class is an abstract class that represents a member of a university.
+ */
 abstract class UniversityMember {
     protected static int numberOfMembers;
     protected int memberId;
     protected String memberName;
 
+    /**
+     * constructor for new member which gives him a unique id and name
+     *
+     * @param memberId id of new member
+     * @param memberName name of new member
+     */
     public UniversityMember(int memberId, String memberName) {
         numberOfMembers++;
         this.memberId = memberId;
         this.memberName = memberName;
     }
-
-
 }
 
+/**
+ * interface for implementation drop and enroll functions in class Student
+ */
 interface Enrollable {
 
     public boolean drop(Course course);
     public boolean enroll(Course course);
 }
 
+/**
+ * class which contain all function of student like enroll drop and adding new student
+ * it also contains list of courses in which the student is enrolled
+ */
 class Student extends UniversityMember implements Enrollable {
     private static final int MAX_ENROLLMENT = 3;
     private final List<Course> enrolledCourse = new ArrayList<Course>();
+
+    /**
+     * constructor for new student
+     * @param memberName name of new student
+     */
     public Student(String memberName) {
         super(numberOfMembers + 1, memberName);
     }
 
+    /**
+     * check if student on this course and drop him from it and remove course om his courses
+     * @param course the course from which the student is to be dropped
+     * @return true if student dropped successfully and false if student is not enrolled in the course
+     */
     public boolean drop(Course course) {
         for (Course enrolled: enrolledCourse) {
             if (enrolled.getCourseld() == course.getCourseld()) {
@@ -344,6 +395,12 @@ class Student extends UniversityMember implements Enrollable {
         UniversityCourseManagementSystem.finish("Student is not enrolled in this course");
         return false;
     }
+
+    /**
+     * try to enroll student on course and add this course to the list of student's courses
+     * @param course the course at which the student try to enroll
+     * @return true if all is good and false in case of error
+     */
     public boolean enroll(Course course) {
         for (Course enrolled: enrolledCourse) {
             if (enrolled.getCourseld() == course.getCourseld()) {
@@ -369,14 +426,26 @@ class Student extends UniversityMember implements Enrollable {
 
 }
 
+/**
+ * class that store all data about professor and have functions about professor
+ */
 class Professor extends UniversityMember {
     private static final int MAX_LOAD = 2;
     private final List<Course> assigmentCourses = new ArrayList<Course>();
 
-
+    /**
+     * constructor of professor
+     * @param memberName name of professor
+     */
     public Professor(String memberName) {
         super(numberOfMembers + 1, memberName);
     }
+
+    /**
+     * assigns the professor to teach the specified course and add it to list of courses
+     * @param course a course to be taught by professor
+     * @return true if all is good and false in case of error
+     */
     public boolean teach(Course course) {
         if (assigmentCourses.size() >= MAX_LOAD) {
             UniversityCourseManagementSystem.finish("Professor's load is complete");
@@ -392,6 +461,12 @@ class Professor extends UniversityMember {
         assigmentCourses.add(course);
         return true;
     }
+
+    /**
+     * exempts the professor from teaching the specified course and remove it from list of assigment courses
+     * @param course course from which professor should be exempted
+     * @return true if the professor is successfully exempted from teaching
+     */
     public boolean exempt(Course course) {
         for (Course assigned : assigmentCourses) {
             if (course.getCourseld() == assigned.getCourseld()) {
@@ -404,11 +479,17 @@ class Professor extends UniversityMember {
     }
 }
 
+/**
+ * enum of two levels of course
+ */
 enum CourseLevel {
     BACHELOR,
     MASTER
 }
 
+/**
+ * class in which all necessary data about course and all functions
+ */
 class Course {
     private static final int CAPACITY = 3;
     private static int numberOfCourses;
@@ -418,7 +499,11 @@ class Course {
     private List<Student> enrolledStudents = new ArrayList<Student>();
     private CourseLevel courseLevel;
 
-
+    /**
+     * constructor of course
+     * @param courseName name of new course
+     * @param couseLevel level of new course (bachelor/master)
+     */
     public Course(String courseName, CourseLevel couseLevel) {
         numberOfCourses++;
         this.courseName = courseName;
@@ -427,19 +512,41 @@ class Course {
 
     }
 
+    /**
+     * get name of course to other functions
+     * @return name of this course
+     */
     public String getCourseName() {
         return courseName;
     }
+
+    /**
+     * get id of this course
+     * @return id of this course
+     */
     public int getCourseld() {
         return courseld;
     }
+
+    /**
+     * function that remove student from list of enrolled students
+     * @param student that should be dropped
+     */
     public void drop(Student student) {
         enrolledStudents.remove(student);
     }
+
+    /**
+     * function that add student to the list of enrolled students
+     * @param student that should be enrolled
+     */
     public void enroll(Student student) {
         enrolledStudents.add(student);
     }
-
+    /**
+     * function that gives us to know if we have any free places at course
+     * @return false if the course isn't full and true if full
+     */
     public boolean isFull() {
         if (enrolledStudents.size() >= CAPACITY) {
             return true;
