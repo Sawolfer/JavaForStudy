@@ -2,6 +2,6 @@ public class InvalidNumberOfFoodPointsException extends Exception{
 
     @Override
     public String getMessage() {
-        return super.getMessage();
+        return "Invalid number of food points";
     }
 }
