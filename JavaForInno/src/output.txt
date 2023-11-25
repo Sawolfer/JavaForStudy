@@ -1,1 +1,1 @@
-Invalid number of food points
+Invalid insect color

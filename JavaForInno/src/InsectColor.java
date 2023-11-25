@@ -4,8 +4,8 @@ public enum InsectColor {
     BLUE,
     YELLOW;
 
-    public InsectColor toColor(String s){
-        s.toLowerCase();
+    public static InsectColor toColor(String s){
+        s = s.toLowerCase();
         switch (s){
             case ("red"):
                 return RED;
@@ -16,6 +16,7 @@ public enum InsectColor {
             case ("yellow"):
                 return YELLOW;
             default:
+                Main.finish(Main.invalidICE.getMessage());
                 return null;
         }
     }

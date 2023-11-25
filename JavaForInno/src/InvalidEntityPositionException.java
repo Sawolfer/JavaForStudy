@@ -2,6 +2,6 @@ public class InvalidEntityPositionException extends Exception{
 
     @Override
     public String getMessage() {
-        return super.getMessage();
+        return "Invalid entity position";
     }
 }
