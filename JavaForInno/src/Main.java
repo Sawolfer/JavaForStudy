@@ -13,6 +13,9 @@ public class Main {
     private static InvalidNumberOfFoodPointsException invalidNOFPE = new InvalidNumberOfFoodPointsException();
     public static InvalidInsectColorException invalidICE = new InvalidInsectColorException();
     private static InvalidEntityPositionException invalidEPE = new InvalidEntityPositionException();
+    private static InvalidInsectTypeException invalidITE = new InvalidInsectTypeException();
+    public static TwoEntitiesOnSamePositionException tESPE = new TwoEntitiesOnSamePositionException();
+    public static DuplicateInsectException DIE = new DuplicateInsectException();
     private static Board gameBoard;
     public static BufferedWriter bw;
     public static BufferedReader br;
@@ -20,7 +23,8 @@ public class Main {
     private static int n;
     private static int m;
 
-    List<Insect> insects = new ArrayList<>();
+    private static List<Insect> insects = new ArrayList<>();
+    private static List<FoodPoint> foodPoints = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -60,15 +64,106 @@ public class Main {
                         try {
                             tmpX = Integer.parseInt(words[2]);
                             tmpY = Integer.parseInt(words[3]);
-                            
+                            if (tmpX > d || tmpY > d) {
+                                finish(invalidEPE.getMessage());
+                            }
                             position = new EntityPosition(tmpX, tmpY);
+                            for (Insect insect : insects) {
+                                if (color == insect.getColor() && insect.getTypeOfInsect() == Ant.class){
+                                    finish(DIE.getMessage());
+                                }
+                            }
                             Ant newAnt = new Ant(position, color);
+                            gameBoard.addEntity(newAnt);
+                            insects.add(newAnt);
+
                         } catch (NumberFormatException e){
                             finish(invalidEPE.getMessage());
                         }
-
+                        break;
+                    case ("butterfly"):
+                        try {
+                            tmpX = Integer.parseInt(words[2]);
+                            tmpY = Integer.parseInt(words[3]);
+                            if (tmpX > d || tmpY > d) {
+                                finish(invalidEPE.getMessage());
+                            }
+                            for (Insect insect : insects) {
+                                if (color == insect.getColor() && insect.getTypeOfInsect() == Butterfly.class){
+                                    finish(DIE.getMessage());
+                                }
+                            }
+                            position = new EntityPosition(tmpX, tmpY);
+                            Butterfly newButterfly = new Butterfly(position, color);
+                            gameBoard.addEntity(newButterfly);
+                            insects.add(newButterfly);
+                        } catch (NumberFormatException e){
+                            finish(invalidEPE.getMessage());
+                        }
+                        break;
+                    case ("spider"):
+                        try {
+                            tmpX = Integer.parseInt(words[2]);
+                            tmpY = Integer.parseInt(words[3]);
+                            if (tmpX > d || tmpY > d) {
+                                finish(invalidEPE.getMessage());
+                            }
+                            for (Insect insect : insects) {
+                                if (color == insect.getColor() && insect.getTypeOfInsect() == Spider.class){
+                                    finish(DIE.getMessage());
+                                }
+                            }
+                            position = new EntityPosition(tmpX, tmpY);
+                            Spider newSpider = new Spider(position, color);
+                            gameBoard.addEntity(newSpider);
+                            insects.add(newSpider);
+                        } catch (NumberFormatException e){
+                            finish(invalidEPE.getMessage());
+                        }
+                        break;
+                    case ("grasshopper"):
+                        try {
+                            tmpX = Integer.parseInt(words[2]);
+                            tmpY = Integer.parseInt(words[3]);
+                            if (tmpX > d || tmpY > d) {
+                                finish(invalidEPE.getMessage());
+                            }
+                            for (Insect insect : insects) {
+                                if (color == insect.getColor() && insect.getTypeOfInsect() == Grasshopper.class){
+                                    finish(DIE.getMessage());
+                                }
+                            }
+                            position = new EntityPosition(tmpX, tmpY);
+                            Grasshopper newGrasshopper = new Grasshopper(position, color);
+                            gameBoard.addEntity(newGrasshopper);
+                            insects.add(newGrasshopper);
+                        } catch (NumberFormatException e){
+                            finish(invalidEPE.getMessage());
+                        }
+                        break;
+                    default:
+                        finish(invalidITE.getMessage());
                 }
-                System.out.println(color);
+            }
+            for (int i = 0; i < m; i++) {
+                currentString = br.readLine();
+                int tmpX, tmpY, value;
+                EntityPosition position;
+                String[] words = currentString.split(" ");
+                try {
+                    value = Integer.parseInt(words[0]);
+                    tmpX = Integer.parseInt(words[1]);
+                    tmpY = Integer.parseInt(words[2]);
+                    if (tmpX > d || tmpY > d) {
+                        finish(invalidEPE.getMessage());
+                    }
+                    position = new EntityPosition(tmpX, tmpY);
+                    FoodPoint foodPoint = new FoodPoint(position, value);
+                    gameBoard.addEntity(foodPoint);
+                    foodPoints.add(foodPoint);
+                } catch (NumberFormatException e) {
+                    finish(invalidEPE.getMessage());
+                }
             }
             finish("");
         } catch (IOException e) {

@@ -7,4 +7,9 @@ public class EntityPosition {
         this.y = y;
     }
 
+    public String toKey(){
+        String key = x + "." + y;
+        return key;
+    }
+
 }

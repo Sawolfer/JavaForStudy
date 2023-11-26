@@ -11,12 +11,19 @@ public class Board {
     }
 
     public void addEntity(BoardEntity entity) {
-        // Implementation
+        String key = entity.entityPosition.toKey();
+        if (boardData.get(key)!= null){
+            Main.finish(Main.tESPE.getMessage());
+            System.out.println(boardData.get(key));
+        }
+        else{
+            boardData.put(key, entity);
+        }
     }
 
     public BoardEntity getEntity(EntityPosition position) {
-        // Implementation
-        return null;
+        String key = position.toKey();
+        return boardData.get(key);
     }
 
     public Direction getDirection(Insect insect) {
