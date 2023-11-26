@@ -1,9 +1,9 @@
 8
 6
 11
-Red Grasshopper 5 4
+Red Ant 5 4
 Green Butterfly 8 7
-Blue Ant 5 7
+Green Ant 5 7
 Blue Spider 3 7
 Green Grasshopper 1 6
 Yellow Spider 2 1
