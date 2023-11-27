@@ -21,6 +21,10 @@ public class Board {
         }
     }
 
+    public Map<String, BoardEntity> getBoardData(){
+        return boardData;
+    }
+
     public BoardEntity getEntity(EntityPosition position) {
         String key = position.toKey();
         return boardData.get(key);

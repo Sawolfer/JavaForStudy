@@ -20,4 +20,18 @@ public enum InsectColor {
                 return null;
         }
     }
+
+    public static String colorToString(InsectColor color) {
+        switch (color) {
+            case RED:
+                return "Red";
+            case BLUE:
+                return "Blue";
+            case GREEN:
+                return "Green";
+            case YELLOW:
+                return "Yellow";
+        }
+        return null;
+    }
 }

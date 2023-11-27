@@ -7,4 +7,8 @@ public class FoodPoint extends BoardEntity{
         this.value = value;
     }
 
+    public int getValue(){
+        return value;
+    }
+
 }

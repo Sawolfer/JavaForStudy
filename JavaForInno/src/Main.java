@@ -21,10 +21,8 @@ public class Main {
     private static int m;
 
     private static List<Insect> insects = new ArrayList<>();
-    private static List<FoodPoint> foodPoints = new ArrayList<>();
 
     public static void main(String[] args) {
-
         try {
             bw = new BufferedWriter(new FileWriter("src/output.txt"));
             br = new BufferedReader(new FileReader("src/input.txt"));
@@ -160,15 +158,19 @@ public class Main {
                     position = new EntityPosition(tmpX, tmpY);
                     FoodPoint foodPoint = new FoodPoint(position, value);
                     gameBoard.addEntity(foodPoint);
-                    foodPoints.add(foodPoint);
                 } catch (NumberFormatException e) {
                     finish(invalidEPE.getMessage());
                 }
+            }
+            for (Insect insect : insects) {
+
+                insect.getBestDirection(gameBoard.getBoardData(), d);
             }
             finish("");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public static void finish(String exception) {
@@ -181,5 +183,14 @@ public class Main {
             throw new RuntimeException(e);
         }
         System.exit(0);
+    }
+
+    public static void write(String letter) {
+        try {
+            bw.write(letter);
+            bw.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

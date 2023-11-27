@@ -1,7 +1,16 @@
+import com.sun.javafx.css.converters.EnumConverter;
+
 public class aaa {
 
+
     public static void main(String args[]){
-        String key = 4 + " " + 4;
-        System.out.println(key);
+//        test some = EnumConverter;
+//        System.out.println();
     }
+}
+
+enum test{
+    n,
+    s,
+    bebe
 }
