@@ -19,33 +19,48 @@ public class Main {
     private static int n;
     private static int m;
 
+    private static final int lowerBoundD = 4;
+    private static final int upperBoundD = 1000;
+    private static final int lowerBoundN = 1;
+    private static final int upperBoundN = 16;
+    private static final int lowerBoundM = 1;
+    private static final int upperBoundM = 200;
+
     private static List<Insect> insects = new ArrayList<>();
 
     public static void main(String[] args) {
         try {
-            bw = new BufferedWriter(new FileWriter("output.txt"));
-            br = new BufferedReader(new FileReader("input.txt"));
+            bw = new BufferedWriter(new FileWriter("src/output.txt"));
+            br = new BufferedReader(new FileReader("src/input.txt"));
             String currentString;
             String strD = br.readLine();
             String strN = br.readLine();
             String strM = br.readLine();
             try {
                 d = Integer.parseInt(strD);
-                n = Integer.parseInt(strN);
-                m = Integer.parseInt(strM);
+                if (d < lowerBoundD || d > upperBoundD) {
+                    finish(invalidBSE.getMessage());
+                }
             } catch (NumberFormatException e) {
-                finish("Wrong inputs");
-            }
-            if (d < 4 || d > 1000) {
                 finish(invalidBSE.getMessage());
             }
-            gameBoard = new Board(d);
-            if (n < 1 || n > 16) {
+            try {
+                n = Integer.parseInt(strN);
+                if (n < lowerBoundN || n > upperBoundN) {
+                    finish(invalidNOIE.getMessage());
+                }
+            } catch (NumberFormatException e) {
                 finish(invalidNOIE.getMessage());
             }
-            if (m < 1 || m > 200) {
+            try {
+                m = Integer.parseInt(strM);
+                if (m < lowerBoundM || m > upperBoundM) {
+                    finish(invalidNOFPE.getMessage());
+                }
+            } catch (NumberFormatException e) {
                 finish(invalidNOFPE.getMessage());
             }
+            gameBoard = new Board(d);
             for (int i = 0; i < n; i++) {
                 currentString = br.readLine();
                 int tmpX;
@@ -53,13 +68,12 @@ public class Main {
                 EntityPosition position;
                 String[] words = currentString.split(" ");
                 InsectColor color = InsectColor.toColor(words[0]);
-                words[1] = words[1].toLowerCase();
                 switch (words[1]) {
-                    case ("ant"):
+                    case ("Ant"):
                         try {
                             tmpX = Integer.parseInt(words[2]);
                             tmpY = Integer.parseInt(words[3]);
-                            if (tmpX > d || tmpY > d) {
+                            if (tmpX > d || tmpY > d || tmpY <= 0 || tmpX <= 0) {
                                 finish(invalidEPE.getMessage());
                             }
                             position = new EntityPosition(tmpX, tmpY);
@@ -76,11 +90,11 @@ public class Main {
                             finish(invalidEPE.getMessage());
                         }
                         break;
-                    case ("butterfly"):
+                    case ("Butterfly"):
                         try {
                             tmpX = Integer.parseInt(words[2]);
                             tmpY = Integer.parseInt(words[3]);
-                            if (tmpX > d || tmpY > d) {
+                            if (tmpX > d || tmpY > d || tmpY <= 0 || tmpX <= 0) {
                                 finish(invalidEPE.getMessage());
                             }
                             for (Insect insect : insects) {
@@ -96,11 +110,11 @@ public class Main {
                             finish(invalidEPE.getMessage());
                         }
                         break;
-                    case ("spider"):
+                    case ("Spider"):
                         try {
                             tmpX = Integer.parseInt(words[2]);
                             tmpY = Integer.parseInt(words[3]);
-                            if (tmpX > d || tmpY > d) {
+                            if (tmpX > d || tmpY > d || tmpY <= 0 || tmpX <= 0) {
                                 finish(invalidEPE.getMessage());
                             }
                             for (Insect insect : insects) {
@@ -116,11 +130,11 @@ public class Main {
                             finish(invalidEPE.getMessage());
                         }
                         break;
-                    case ("grasshopper"):
+                    case ("Grasshopper"):
                         try {
                             tmpX = Integer.parseInt(words[2]);
                             tmpY = Integer.parseInt(words[3]);
-                            if (tmpX > d || tmpY > d) {
+                            if (tmpX > d || tmpY > d || tmpY <= 0 || tmpX <= 0) {
                                 finish(invalidEPE.getMessage());
                             }
                             for (Insect insect : insects) {
@@ -151,7 +165,7 @@ public class Main {
                     value = Integer.parseInt(words[0]);
                     tmpX = Integer.parseInt(words[1]);
                     tmpY = Integer.parseInt(words[2]);
-                    if (tmpX > d || tmpY > d) {
+                    if (tmpX > d || tmpY > d || tmpY <= 0 || tmpX <= 0) {
                         finish(invalidEPE.getMessage());
                     }
                     position = new EntityPosition(tmpX, tmpY);
@@ -162,19 +176,28 @@ public class Main {
                 }
             }
             for (Insect insect : insects) {
-
                 insect.getBestDirection(gameBoard.getBoardData(), d);
             }
-            finish("");
+            finish();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    public static void finish() {
+        try {
+            bw.close();
+            br.close();
+            System.exit(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.exit(0);
+    }
     public static void finish(String exception) {
         try {
             bw.write(exception);
+            bw.newLine();
             bw.close();
             br.close();
             System.exit(0);
@@ -210,16 +233,15 @@ class Board {
 
     public void addEntity(BoardEntity entity) {
         String key = entity.entityPosition.toKey();
-        if (boardData.get(key)!= null){
+        if (boardData.get(key) != null) {
             Main.finish(Main.tESPE.getMessage());
             System.out.println(boardData.get(key));
-        }
-        else{
+        } else {
             boardData.put(key, entity);
         }
     }
 
-    public Map<String, BoardEntity> getBoardData(){
+    public Map<String, BoardEntity> getBoardData() {
         return boardData;
     }
 
@@ -239,26 +261,25 @@ class Board {
     }
 }
 class EntityPosition {
-    int x;
-    int y;
+    protected int x;
+    protected int y;
 
-    public EntityPosition(int x, int y){
+    public EntityPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public String toKey(){
+    public String toKey() {
         String key = x + "." + y;
         return key;
     }
-
 }
 
-class FoodPoint extends BoardEntity{
+class FoodPoint extends BoardEntity {
 
     protected int value;
 
-    public FoodPoint(EntityPosition position, int value){
+    public FoodPoint(EntityPosition position, int value) {
         this.entityPosition = new EntityPosition(position.x, position.y);
         this.value = value;
     }
@@ -295,9 +316,9 @@ enum InsectColor {
     BLUE,
     YELLOW;
 
-    public static InsectColor toColor(String s){
+    public static InsectColor toColor(String s) {
         s = s.toLowerCase();
-        switch (s){
+        switch (s) {
             case ("red"):
                 return RED;
             case ("green"):
@@ -322,8 +343,9 @@ enum InsectColor {
                 return "Green";
             case YELLOW:
                 return "Yellow";
+            default:
+                return null;
         }
-        return null;
     }
 }
 
@@ -349,65 +371,85 @@ class Insect extends BoardEntity {
     public InsectColor getColor() {
         return color;
     }
-    public Class getTypeOfInsect(){
+    public Class getTypeOfInsect() {
         return this.getClass();
     }
 
 }
 interface OrthogonalMoving {
-    int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition, Map<String, BoardEntity> boardData, int boardSize);
+    int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                           Map<String, BoardEntity> boardData, int boardSize);
 
-    int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color, Map<String, BoardEntity> boardData, int boardSize);
+    int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
+                           Map<String, BoardEntity> boardData, int boardSize);
 }
 
 interface DiagonalMoving {
-    int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition, Map<String, BoardEntity> boardData, int boardSize);
+    int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                         Map<String, BoardEntity> boardData, int boardSize);
 
-    int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color, Map<String, BoardEntity> boardData, int boardSize);
+    int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color,
+                         Map<String, BoardEntity> boardData, int boardSize);
 }
 
-class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
+class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
 
-    int step = 1;
-    int value;
-    public Ant(EntityPosition position, InsectColor color){
+    private int step = 1;
+    private int value;
+    public Ant(EntityPosition position, InsectColor color) {
         super(position, color);
     }
     @Override
     public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
-        Map <Integer, Direction> values = new HashMap<>();
+        Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
         int key;
         key = getOrthogonalDirectionVisibleValue(Direction.N, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.N);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.N);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.E, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.E);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.E);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.S, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.S);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.S);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.W, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.W);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.W);
+            maxValues.add(key);
+        }
 
         key = getDiagonalDirectionVisibleValue(Direction.NE, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.NE);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.NE);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.SE, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.SE);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.SE);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.SW, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.SW);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.SW);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.NW, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.NW);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.NW);
+            maxValues.add(key);
+        }
 
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
-        if (key == 0){
+        if (key == 0) {
             travelDirection(Direction.N, boardData, boardSize);
         } else {
             travelDirection(bestDirection, boardData, boardSize);
@@ -442,12 +484,14 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                 break;
         }
         String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " " + direction.getTextRepresentation() + " " + value;
+        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " " +
+                direction.getTextRepresentation() + " " + value;
         Main.write(letter);
     }
 
     @Override
-    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition, Map<String, BoardEntity> boardData, int boardSize) {
+    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                                  Map<String, BoardEntity> boardData, int boardSize) {
         int biggestValue=0;
         String key;
         int value;
@@ -459,9 +503,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -470,9 +512,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -481,9 +521,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -492,9 +530,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -612,9 +648,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -625,9 +659,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -638,9 +670,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -651,9 +681,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -776,17 +804,25 @@ class Butterfly extends Insect implements OrthogonalMoving{
         Direction bestDirection;
         int key;
         key = getOrthogonalDirectionVisibleValue(Direction.N, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.N);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.N);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.E, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.E);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.E);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.S, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.S);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.S);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.W, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.W);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.W);
+            maxValues.add(key);
+        }
 
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
@@ -831,9 +867,7 @@ class Butterfly extends Insect implements OrthogonalMoving{
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -842,9 +876,7 @@ class Butterfly extends Insect implements OrthogonalMoving{
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -853,9 +885,7 @@ class Butterfly extends Insect implements OrthogonalMoving{
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -864,9 +894,7 @@ class Butterfly extends Insect implements OrthogonalMoving{
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -986,17 +1014,25 @@ class Spider extends Insect implements DiagonalMoving{
         int key;
 
         key = getDiagonalDirectionVisibleValue(Direction.NE, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.NE);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.NE);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.SE, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.SE);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.SE);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.SW, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.SW);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.SW);
+            maxValues.add(key);
+        }
         key = getDiagonalDirectionVisibleValue(Direction.NW, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.NW);
-        maxValues.add(key);
+        if (values.get(key) == null){
+            values.put(key, Direction.NW);
+            maxValues.add(key);
+        }
 
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
@@ -1043,9 +1079,7 @@ class Spider extends Insect implements DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -1056,9 +1090,7 @@ class Spider extends Insect implements DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -1069,9 +1101,7 @@ class Spider extends Insect implements DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -1082,9 +1112,7 @@ class Spider extends Insect implements DiagonalMoving{
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        biggestValue += value;
                     }
                 }
                 break;
@@ -1195,33 +1223,41 @@ class Spider extends Insect implements DiagonalMoving{
 
 class Grasshopper extends Insect{
 
-    int value;
-    int step = 2;
-    public Grasshopper(EntityPosition position, InsectColor color){
+    private int value;
+    private int step = 2;
+    public Grasshopper(EntityPosition position, InsectColor color) {
         super(position, color);
     }
     @Override
     public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
-        Map <Integer, Direction> values = new HashMap<>();
+        Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
         int key;
         key = getOrthogonalDirectionVisibleValue(Direction.N, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.N);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.N);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.E, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.E);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.E);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.S, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.S);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.S);
+            maxValues.add(key);
+        }
         key = getOrthogonalDirectionVisibleValue(Direction.W, this.entityPosition, boardData, boardSize);
-        values.put(key, Direction.W);
-        maxValues.add(key);
+        if (values.get(key) == null) {
+            values.put(key, Direction.W);
+            maxValues.add(key);
+        }
 
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
-        if (key == 0){
+        if (key == 0) {
             travelDirection(Direction.N, boardData, boardSize);
         } else {
             travelDirection(bestDirection, boardData, boardSize);
@@ -1242,73 +1278,72 @@ class Grasshopper extends Insect{
             case W:
                 value = travelOrthogonally(Direction.W, this.entityPosition, this.color, boardData, boardSize);
                 break;
+            default:
+                return;
         }
         String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " " + direction.getTextRepresentation() + " " + value;
+        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
+                + direction.getTextRepresentation() + " " + value;
         Main.write(letter);
     }
 
-    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition, Map<String, BoardEntity> boardData, int boardSize) {
-        int biggestValue=0;
+    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                                  Map<String, BoardEntity> boardData, int boardSize) {
+        int biggestValue = 0;
         String key;
         int value;
         int x = entityPosition.x;
         int y = entityPosition.y;
-        switch (dir){
+        switch (dir) {
             case N:
-                for (int i = x; i > 0; i-=step) {
+                for (int i = x; i > 0; i -= step) {
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
                     }
                 }
                 break;
             case E:
-                for (int i = y; i <= boardSize; i+=step) {
+                for (int i = y; i <= boardSize; i += step) {
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
                     }
                 }
                 break;
             case S:
-                for (int i = x; i <= boardSize; i+=step) {
+                for (int i = x; i <= boardSize; i += step) {
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
                     }
                 }
                 break;
             case W:
-                for (int i = y; i > 0; i-=step) {
+                for (int i = y; i > 0; i -= step) {
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint)boardData.get(key)).getValue();
-                        if (value >= biggestValue) {
-                            biggestValue = value;
-                        }
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
                     }
                 }
                 break;
+            default:
+                return 0;
         }
         return biggestValue;
     }
 
-    public int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
+                                  Map<String, BoardEntity> boardData, int boardSize) {
         int x = this.entityPosition.x;
         int y = this.entityPosition.y;
         String thisKey = x + "." + y;
         String key;
-        switch (dir){
+        switch (dir) {
             case N:
                 while (x > 0) {
                     x -= step;
@@ -1316,13 +1351,12 @@ class Grasshopper extends Insect{
                     if (boardData.get(key) == null) {
                         continue;
                     } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint)boardData.get(key)).getValue();
+                        value += ((FoodPoint) boardData.get(key)).getValue();
                         boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect){
-                        if (this.color == ((Insect)boardData.get(key)).getColor()) {
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
                             continue;
-                        }
-                        else {
+                        } else {
                             boardData.remove(thisKey);
                             return value;
                         }
@@ -1337,13 +1371,12 @@ class Grasshopper extends Insect{
                     if (boardData.get(key) == null) {
                         continue;
                     } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint)boardData.get(key)).getValue();
+                        value += ((FoodPoint) boardData.get(key)).getValue();
                         boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect){
-                        if (this.color == ((Insect)boardData.get(key)).getColor()) {
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
                             continue;
-                        }
-                        else {
+                        } else {
                             boardData.remove(thisKey);
                             return value;
                         }
@@ -1358,13 +1391,12 @@ class Grasshopper extends Insect{
                     if (boardData.get(key) == null) {
                         continue;
                     } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint)boardData.get(key)).getValue();
+                        value += ((FoodPoint) boardData.get(key)).getValue();
                         boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect){
-                        if (this.color == ((Insect)boardData.get(key)).getColor()) {
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
                             continue;
-                        }
-                        else {
+                        } else {
                             boardData.remove(thisKey);
                             return value;
                         }
@@ -1379,13 +1411,12 @@ class Grasshopper extends Insect{
                     if (boardData.get(key) == null) {
                         continue;
                     } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint)boardData.get(key)).getValue();
+                        value += ((FoodPoint) boardData.get(key)).getValue();
                         boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect){
-                        if (this.color == ((Insect)boardData.get(key)).getColor()) {
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
                             continue;
-                        }
-                        else {
+                        } else {
                             boardData.remove(thisKey);
                             return value;
                         }
@@ -1393,12 +1424,14 @@ class Grasshopper extends Insect{
                 }
                 boardData.remove(thisKey);
                 break;
+            default:
+                return 0;
         }
         return value;
     }
 }
 
-class DuplicateInsectException extends Exception{
+class DuplicateInsectException extends Exception {
 
     @Override
     public String getMessage() {
@@ -1407,14 +1440,14 @@ class DuplicateInsectException extends Exception{
     }
 }
 
-class InvalidBoardSizeException extends Exception{
+class InvalidBoardSizeException extends Exception {
 
     @Override
     public String getMessage() {
         return "Invalid board size";
     }
 }
-class InvalidEntityPositionException extends Exception{
+class InvalidEntityPositionException extends Exception {
 
     @Override
     public String getMessage() {
@@ -1422,7 +1455,7 @@ class InvalidEntityPositionException extends Exception{
     }
 }
 
-class InvalidInsectColorException extends Exception{
+class InvalidInsectColorException extends Exception {
 
     @Override
     public String getMessage() {
@@ -1430,7 +1463,7 @@ class InvalidInsectColorException extends Exception{
     }
 }
 
-class InvalidInsectTypeException extends Exception{
+class InvalidInsectTypeException extends Exception {
 
     @Override
     public String getMessage() {
@@ -1438,7 +1471,7 @@ class InvalidInsectTypeException extends Exception{
     }
 }
 
-class InvalidNumberOfFoodPointsException extends Exception{
+class InvalidNumberOfFoodPointsException extends Exception {
 
     @Override
     public String getMessage() {
@@ -1446,14 +1479,14 @@ class InvalidNumberOfFoodPointsException extends Exception{
     }
 }
 
-class InvalidNumberOfInsectsException extends Exception{
+class InvalidNumberOfInsectsException extends Exception {
 
     @Override
     public String getMessage() {
         return "Invalid number of insects";
     }
 }
-class TwoEntitiesOnSamePositionException extends Exception{
+class TwoEntitiesOnSamePositionException extends Exception {
 
     @Override
     public String getMessage() {
