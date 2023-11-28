@@ -532,6 +532,8 @@ class Insect extends BoardEntity {
  */
 interface OrthogonalMoving {
 
+    int step = 1;
+
     /**
      * Returns the visible value in the specified direction from the entity's position.
      *
@@ -541,8 +543,55 @@ interface OrthogonalMoving {
      * @param boardSize - size of the board
      * @return the visible value in the specified direction
      */
-    int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                           Map<String, BoardEntity> boardData, int boardSize);
+    public default int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                           Map<String, BoardEntity> boardData, int boardSize) {
+        int biggestValue = 0;
+        String key;
+        int value;
+        int x = entityPosition.x;
+        int y = entityPosition.y;
+        switch (dir) {
+            case N:
+                for (int i = x; i > 0; i -= step) {
+                    key = i + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case E:
+                for (int i = y; i <= boardSize; i += step) {
+                    key = x + "." + i;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case S:
+                for (int i = x; i <= boardSize; i += step) {
+                    key = i + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case W:
+                for (int i = y; i > 0; i -= step) {
+                    key = x + "." + i;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            default:
+                return 0;
+        }
+        return biggestValue;
+    }
 
     /**
      * Move the entity orthogonally in the specified direction and returns the new position.
@@ -554,13 +603,105 @@ interface OrthogonalMoving {
      * @param boardSize - size of the board
      * @return the new position of the entity after moving orthogonally
      */
-    int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                           Map<String, BoardEntity> boardData, int boardSize);
+    public default int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
+                           Map<String, BoardEntity> boardData, int boardSize){
+        int value = 0;
+        int x = entityPosition.x;
+        int y = entityPosition.y;
+        String thisKey = x + "." + y;
+        String key;
+        switch (dir) {
+            case N:
+                while (x > 0) {
+                    x -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case E:
+                while (y < boardSize) {
+                    y += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case S:
+                while (x < boardSize) {
+                    x += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case W:
+                while (y > 0) {
+                    y -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            default:
+                return 0;
+        }
+        return value;
+    }
 }
 /**
  * This interface provides methods for diagonal movement of entities on a board.
  */
 interface DiagonalMoving {
+    int step = 1;
     /**
      * Returns the visible value in the specified direction from the entity's position.
      *
@@ -570,8 +711,63 @@ interface DiagonalMoving {
      * @param boardSize - size of the board
      * @return the visible value in the specified direction
      */
-    int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                         Map<String, BoardEntity> boardData, int boardSize);
+    public default int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
+                                         Map<String, BoardEntity> boardData, int boardSize) {
+        int biggestValue = 0;
+        String key;
+        int value;
+        int x = entityPosition.x;
+        int y = entityPosition.y;
+        switch (dir) {
+            case NE:
+                while (x > 0 && y < boardSize) {
+                    x -= step;
+                    y += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case SE:
+                while (x < boardSize && y < boardSize) {
+                    x += step;
+                    y += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case SW:
+                while (x < boardSize && y > 0) {
+                    x += step;
+                    y -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            case NW:
+                while (x > 0 && y > 0) {
+                    x -= step;
+                    y -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) instanceof FoodPoint) {
+                        value = ((FoodPoint) boardData.get(key)).getValue();
+                        biggestValue += value;
+                    }
+                }
+                break;
+            default:
+                return 0;
+        }
+        return biggestValue;
+    }
 
     /**
      * Move the entity diagonally in the specified direction and returns the new position.
@@ -583,8 +779,104 @@ interface DiagonalMoving {
      * @param boardSize - size of the board
      * @return the new position of the entity after moving orthogonally
      */
-    int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                         Map<String, BoardEntity> boardData, int boardSize);
+    public default int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color,
+                         Map<String, BoardEntity> boardData, int boardSize) {
+        int value = 0;
+        int x = entityPosition.x;
+        int y = entityPosition.y;
+        String thisKey = x + "." + y;
+        String key;
+
+        switch (dir) {
+            case NE:
+                while (y < boardSize && x > 0) {
+                    y += step;
+                    x -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case SE:
+                while (y < boardSize && x < boardSize) {
+                    y += step;
+                    x += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case SW:
+                while (y > 0 && x < boardSize) {
+                    y -= step;
+                    x += step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            case NW:
+                while (y > 0 && x > 0) {
+                    y -= step;
+                    x -= step;
+                    key = x + "." + y;
+                    if (boardData.get(key) == null) {
+                        continue;
+                    } else if (boardData.get(key) instanceof FoodPoint) {
+                        value += ((FoodPoint) boardData.get(key)).getValue();
+                        boardData.remove(key);
+                    } else if (boardData.get(key) instanceof Insect) {
+                        if (color == ((Insect) boardData.get(key)).getColor()) {
+                            continue;
+                        } else {
+                            boardData.remove(thisKey);
+                            return value;
+                        }
+                    }
+                }
+                boardData.remove(thisKey);
+                break;
+            default:
+                return 0;
+        }
+        return value;
+    }
 }
 
 /**
@@ -707,346 +999,6 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
         Main.write(letter);
     }
 
-    /**
-     * Returns the visible value in the specified direction from the entity's position.
-     *
-     * @param dir - the direction in which to check for visibility
-     * @param entityPosition - the position of the entity on the board
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the visible value in the specified direction
-     */
-    @Override
-    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                                  Map<String, BoardEntity> boardData, int boardSize) {
-        int biggestValue = 0;
-        String key;
-        int value;
-        int x = entityPosition.x;
-        int y = entityPosition.y;
-        switch (dir) {
-            case N:
-                for (int i = x; i > 0; i -= step) {
-                    key = i + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case E:
-                for (int i = y; i <= boardSize; i += step) {
-                    key = x + "." + i;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case S:
-                for (int i = x; i <= boardSize; i += step) {
-                    key = i + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case W:
-                for (int i = y; i > 0; i -= step) {
-                    key = x + "." + i;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            default:
-                return 0;
-        }
-        return biggestValue;
-    }
-
-    /**
-     * Move the entity orthogonally in the specified direction and returns the new position.
-     *
-     * @param dir - the direction in which to move the entity
-     * @param entityPosition - the current position of the entity
-     * @param color - the color of the insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the new position of the entity after moving orthogonally
-     */
-    @Override
-    public int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                                  Map<String, BoardEntity> boardData, int boardSize) {
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        String thisKey = x + "." + y;
-        String key;
-        switch (dir) {
-            case N:
-                while (x > 0) {
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case E:
-                while (y < boardSize) {
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case S:
-                while (x < boardSize) {
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case W:
-                while (y > 0) {
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            default:
-                return 0;
-        }
-        return value;
-    }
-
-    /**
-     * Returns the visible value in the specified direction from the entity's position.
-     *
-     * @param dir - the direction in which to check for visibility
-     * @param entityPosition - the position of the entity on the board
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the visible value in the specified direction
-     */
-    @Override
-    public int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                                Map<String, BoardEntity> boardData, int boardSize) {
-        int biggestValue = 0;
-        String key;
-        int value;
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        switch (dir) {
-            case NE:
-                while (x > 0 && y < boardSize) {
-                    x -= step;
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case SE:
-                while (x < boardSize && y < boardSize) {
-                    x += step;
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case SW:
-                while (x < boardSize && y > 0) {
-                    x += step;
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case NW:
-                while (x > 0 && y > 0) {
-                    x -= step;
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            default:
-                return 0;
-        }
-        return biggestValue;
-    }
-
-    /**
-     * Move the entity diagonally in the specified direction and returns the new position.
-     *
-     * @param dir - the direction in which to move the entity
-     * @param entityPosition - the current position of the entity
-     * @param color - the color of the insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the new position of the entity after moving orthogonally
-     */
-    @Override
-    public int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                                Map<String, BoardEntity> boardData, int boardSize) {
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        String thisKey = x + "." + y;
-        String key;
-
-        switch (dir) {
-            case NE:
-                while (y < boardSize && x > 0) {
-                    y += step;
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case SE:
-                while (y < boardSize && x < boardSize) {
-                    y += step;
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case SW:
-                while (y > 0 && x < boardSize) {
-                    y -= step;
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case NW:
-                while (y > 0 && x > 0) {
-                    y -= step;
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            default:
-                return 0;
-        }
-        return value;
-    }
 }
 
 /**
@@ -1137,171 +1089,6 @@ class Butterfly extends Insect implements OrthogonalMoving {
                 + direction.getTextRepresentation() + " " + value;
         Main.write(letter);
     }
-
-    /**
-     * Returns the visible value in the specified direction from the entity's position.
-     *
-     * @param dir - the direction in which to check for visibility
-     * @param entityPosition - the position of the entity on the board
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the visible value in the specified direction
-     */
-    @Override
-    public int getOrthogonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                                  Map<String, BoardEntity> boardData, int boardSize) {
-        int biggestValue = 0;
-        String key;
-        int value;
-        int x = entityPosition.x;
-        int y = entityPosition.y;
-
-        switch (dir) {
-            case N:
-                for (int i = x; i > 0; i -= step) {
-                    key = i + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case E:
-                for (int i = y; i <= boardSize; i += step) {
-                    key = x + "." + i;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case S:
-                for (int i = x; i <= boardSize; i += step) {
-                    key = i + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case W:
-                for (int i = y; i > 0; i -= step) {
-                    key = x + "." + i;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            default:
-                return 0;
-        }
-        return biggestValue;
-    }
-
-    /**
-     * Move the entity orthogonally in the specified direction and returns the new position.
-     *
-     * @param dir - the direction in which to move the entity
-     * @param entityPosition - the current position of the entity
-     * @param color - the color of the insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the new position of the entity after moving orthogonally
-     */
-    @Override
-    public int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                                  Map<String, BoardEntity> boardData, int boardSize) {
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        String thisKey = x + "." + y;
-        String key;
-        switch (dir) {
-            case N:
-                while (x > 0) {
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case E:
-                while (y < boardSize) {
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case S:
-                while (x < boardSize) {
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case W:
-                while (y > 0) {
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            default:
-                return 0;
-        }
-        return value;
-    }
 }
 
 /**
@@ -1391,183 +1178,6 @@ class Spider extends Insect implements DiagonalMoving {
                 + direction.getTextRepresentation() + " " + value;
         Main.write(letter);
     }
-
-    /**
-     * Returns the visible value in the specified direction from the entity's position.
-     *
-     * @param dir - the direction in which to check for visibility
-     * @param entityPosition - the position of the entity on the board
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the visible value in the specified direction
-     */
-    @Override
-    public int getDiagonalDirectionVisibleValue(Direction dir, EntityPosition entityPosition,
-                                                Map<String, BoardEntity> boardData, int boardSize) {
-        int biggestValue = 0;
-        String key;
-        int value;
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        switch (dir) {
-            case NE:
-                while (x > 0 && y < boardSize) {
-                    x -= step;
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case SE:
-                while (x < boardSize && y < boardSize) {
-                    x += step;
-                    y += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case SW:
-                while (x < boardSize && y > 0) {
-                    x += step;
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            case NW:
-                while (x > 0 && y > 0) {
-                    x -= step;
-                    y -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) instanceof FoodPoint) {
-                        value = ((FoodPoint) boardData.get(key)).getValue();
-                        biggestValue += value;
-                    }
-                }
-                break;
-            default:
-                return 0;
-        }
-        return biggestValue;
-    }
-
-    /**
-     * Move the entity diagonally in the specified direction and returns the new position.
-     *
-     * @param dir - the direction in which to move the entity
-     * @param entityPosition - the current position of the entity
-     * @param color - the color of the insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     * @return the new position of the entity after moving orthogonally
-     */
-    @Override
-    public int travelDiagonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                                Map<String, BoardEntity> boardData, int boardSize) {
-        int x = this.entityPosition.x;
-        int y = this.entityPosition.y;
-        String thisKey = x + "." + y;
-        String key;
-        switch (dir) {
-            case NE:
-                while (y < boardSize && x > 0) {
-                    y += step;
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case SE:
-                while (y < boardSize && x < boardSize) {
-                    y += step;
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case SW:
-                while (y > 0 && x < boardSize) {
-                    y -= step;
-                    x += step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            case NW:
-                while (y > 0 && x > 0) {
-                    y -= step;
-                    x -= step;
-                    key = x + "." + y;
-                    if (boardData.get(key) == null) {
-                        continue;
-                    } else if (boardData.get(key) instanceof FoodPoint) {
-                        value += ((FoodPoint) boardData.get(key)).getValue();
-                        boardData.remove(key);
-                    } else if (boardData.get(key) instanceof Insect) {
-                        if (this.color == ((Insect) boardData.get(key)).getColor()) {
-                            continue;
-                        } else {
-                            boardData.remove(thisKey);
-                            return value;
-                        }
-                    }
-                }
-                boardData.remove(thisKey);
-                break;
-            default:
-                return 0;
-        }
-        return value;
-    }
-
 }
 
 /**
