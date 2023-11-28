@@ -1,17 +1,25 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 public class Main {
     public static void main(String[] args) {
-        // Press Opt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Random random = new Random();
+        List<Integer> numbers = new ArrayList<>();
 
-        // Press Ctrl+R or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
-
-            // Press Ctrl+D to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Cmd+F8.
-            System.out.println("i = " + i);
+        // Fill the list with random positive and negative values
+        for (int i = 0; i < 10; i++) {
+            numbers.add(random.nextInt(201) - 100); // Generate values between -100 and 100
         }
+
+        // Use stream to filter and modify the numbers
+        List<Integer> result = numbers.stream()
+                .filter(n -> n % 3 == 0) // Filter numbers divisible by 3
+                .map(n -> Math.abs(n))  // Remove the negative sign if present
+                .collect(Collectors.toList());
+
+        // Display the result
+        System.out.println(result);
     }
 }
