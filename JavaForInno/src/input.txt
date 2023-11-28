@@ -1,28 +1,20 @@
-5
-16
-9
-Blue Ant 2 1
-Yellow Spider 4 3
-Red Butterfly 1 2
-Red Ant 5 2
-Blue Butterfly 1 4
-Red Spider 1 5
-Yellow Ant 5 5
-Green Spider 2 3
-Red Grasshopper 4 2
-Blue Spider 5 4
-Green Ant 2 4
-Blue Grasshopper 4 1
-Yellow Grasshopper 3 4
-Green Butterfly 3 2
-Yellow Butterfly 1 1
-Green Grasshopper 2 5
-15 4 5
-10 4 4
+8
+6
+11
+Red Grasshopper 5 4
+Green Butterfly 8 7
+Blue Ant 5 5
+Blue Spider 3 7
+Green Grasshopper 1 6
+Yellow Spider 2 1
+5 1 4
+9 1 7
+6 2 2
+3 2 6
+1 3 1
+7 4 5
+5 4 7
 4 5 3
-9 3 5
-12 2 2
-11 3 3
-12 1 3
-5 5 1
-14 3 1
+1 7 4
+2 7 6
+6 8 1

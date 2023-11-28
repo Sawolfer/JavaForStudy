@@ -195,7 +195,7 @@ public class Main {
                 }
             }
             for (Insect insect : insects) {
-                insect.getBestDirection(gameBoard.getBoardData(), d);
+                insect.returnAnswer(gameBoard.getBoardData(), d);
             }
             finish();
         } catch (IOException e) {
@@ -496,8 +496,8 @@ class Insect extends BoardEntity {
      * @param boardData - data of the board
      * @param boardSize - size of the board
      */
-    public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
-
+    public Direction getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
+        return null;
     }
 
     /**
@@ -506,8 +506,21 @@ class Insect extends BoardEntity {
      * @param boardData - data of the board
      * @param boardSize - size of the board
      */
-    public void travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+        return 0;
+    }
 
+    /**
+     * this function return string with color, type, direction and food value that collected insect
+     * @param boardData - data of the board
+     * @param boardSize - size of the board
+     */
+    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
+        Direction direction = getBestDirection(boardData, boardSize);
+        String letter;
+        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
+                + direction.getTextRepresentation() + " " + travelDirection(direction, boardData, boardSize);
+        Main.write(letter);
     }
 
     /**
@@ -532,7 +545,7 @@ class Insect extends BoardEntity {
  */
 interface OrthogonalMoving {
 
-    int step = 1;
+    int STEP = 1;
 
     /**
      * Returns the visible value in the specified direction from the entity's position.
@@ -552,7 +565,7 @@ interface OrthogonalMoving {
         int y = entityPosition.y;
         switch (dir) {
             case N:
-                for (int i = x; i > 0; i -= step) {
+                for (int i = x; i > 0; i -= STEP) {
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -561,7 +574,7 @@ interface OrthogonalMoving {
                 }
                 break;
             case E:
-                for (int i = y; i <= boardSize; i += step) {
+                for (int i = y; i <= boardSize; i += STEP) {
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -570,7 +583,7 @@ interface OrthogonalMoving {
                 }
                 break;
             case S:
-                for (int i = x; i <= boardSize; i += step) {
+                for (int i = x; i <= boardSize; i += STEP) {
                     key = i + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -579,7 +592,7 @@ interface OrthogonalMoving {
                 }
                 break;
             case W:
-                for (int i = y; i > 0; i -= step) {
+                for (int i = y; i > 0; i -= STEP) {
                     key = x + "." + i;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -604,7 +617,7 @@ interface OrthogonalMoving {
      * @return the new position of the entity after moving orthogonally
      */
     public default int travelOrthogonally(Direction dir, EntityPosition entityPosition, InsectColor color,
-                           Map<String, BoardEntity> boardData, int boardSize){
+                           Map<String, BoardEntity> boardData, int boardSize) {
         int value = 0;
         int x = entityPosition.x;
         int y = entityPosition.y;
@@ -613,7 +626,7 @@ interface OrthogonalMoving {
         switch (dir) {
             case N:
                 while (x > 0) {
-                    x -= step;
+                    x -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -633,7 +646,7 @@ interface OrthogonalMoving {
                 break;
             case E:
                 while (y < boardSize) {
-                    y += step;
+                    y += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -653,7 +666,7 @@ interface OrthogonalMoving {
                 break;
             case S:
                 while (x < boardSize) {
-                    x += step;
+                    x += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -673,7 +686,7 @@ interface OrthogonalMoving {
                 break;
             case W:
                 while (y > 0) {
-                    y -= step;
+                    y -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -701,7 +714,7 @@ interface OrthogonalMoving {
  * This interface provides methods for diagonal movement of entities on a board.
  */
 interface DiagonalMoving {
-    int step = 1;
+    int STEP = 1;
     /**
      * Returns the visible value in the specified direction from the entity's position.
      *
@@ -721,8 +734,8 @@ interface DiagonalMoving {
         switch (dir) {
             case NE:
                 while (x > 0 && y < boardSize) {
-                    x -= step;
-                    y += step;
+                    x -= STEP;
+                    y += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -732,8 +745,8 @@ interface DiagonalMoving {
                 break;
             case SE:
                 while (x < boardSize && y < boardSize) {
-                    x += step;
-                    y += step;
+                    x += STEP;
+                    y += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -743,8 +756,8 @@ interface DiagonalMoving {
                 break;
             case SW:
                 while (x < boardSize && y > 0) {
-                    x += step;
-                    y -= step;
+                    x += STEP;
+                    y -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -754,8 +767,8 @@ interface DiagonalMoving {
                 break;
             case NW:
                 while (x > 0 && y > 0) {
-                    x -= step;
-                    y -= step;
+                    x -= STEP;
+                    y -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) instanceof FoodPoint) {
                         value = ((FoodPoint) boardData.get(key)).getValue();
@@ -790,8 +803,8 @@ interface DiagonalMoving {
         switch (dir) {
             case NE:
                 while (y < boardSize && x > 0) {
-                    y += step;
-                    x -= step;
+                    y += STEP;
+                    x -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -811,8 +824,8 @@ interface DiagonalMoving {
                 break;
             case SE:
                 while (y < boardSize && x < boardSize) {
-                    y += step;
-                    x += step;
+                    y += STEP;
+                    x += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -832,8 +845,8 @@ interface DiagonalMoving {
                 break;
             case SW:
                 while (y > 0 && x < boardSize) {
-                    y -= step;
-                    x += step;
+                    y -= STEP;
+                    x += STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -853,8 +866,8 @@ interface DiagonalMoving {
                 break;
             case NW:
                 while (y > 0 && x > 0) {
-                    y -= step;
-                    x -= step;
+                    y -= STEP;
+                    x -= STEP;
                     key = x + "." + y;
                     if (boardData.get(key) == null) {
                         continue;
@@ -902,7 +915,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
+    public Direction getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
         Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
@@ -952,9 +965,11 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
         if (key == 0) {
-            travelDirection(Direction.N, boardData, boardSize);
+//            travelDirection(Direction.N, boardData, boardSize);
+            return Direction.N;
         } else {
-            travelDirection(bestDirection, boardData, boardSize);
+//            travelDirection(bestDirection, boardData, boardSize);
+            return bestDirection;
         }
     }
     /**
@@ -964,7 +979,7 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
         switch (direction) {
             case N:
                 value = travelOrthogonally(Direction.N, this.entityPosition, this.color, boardData, boardSize);
@@ -991,14 +1006,20 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
                 value = travelDiagonally(Direction.NW, this.entityPosition, this.color, boardData, boardSize);
                 break;
             default:
-                return;
+                return 0;
         }
-        String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
-                + direction.getTextRepresentation() + " " + value;
-        Main.write(letter);
+        return value;
     }
 
+    /**
+     * this function return string with color, type, direction and food value that collected insect
+     * @param boardData - data of the board
+     * @param boardSize - size of the board
+     */
+    @Override
+    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
+        super.returnAnswer(boardData, boardSize);
+    }
 }
 
 /**
@@ -1025,7 +1046,7 @@ class Butterfly extends Insect implements OrthogonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
+    public Direction getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
         Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
@@ -1054,9 +1075,9 @@ class Butterfly extends Insect implements OrthogonalMoving {
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
         if (key == 0) {
-            travelDirection(Direction.N, boardData, boardSize);
+            return Direction.N;
         } else {
-            travelDirection(bestDirection, boardData, boardSize);
+            return bestDirection;
         }
     }
 
@@ -1067,7 +1088,7 @@ class Butterfly extends Insect implements OrthogonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
         switch (direction) {
             case N:
                 value = travelOrthogonally(Direction.N, this.entityPosition, this.color, boardData, boardSize);
@@ -1082,12 +1103,18 @@ class Butterfly extends Insect implements OrthogonalMoving {
                 value = travelOrthogonally(Direction.W, this.entityPosition, this.color, boardData, boardSize);
                 break;
             default:
-                return;
+                return 0;
         }
-        String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
-                + direction.getTextRepresentation() + " " + value;
-        Main.write(letter);
+        return value;
+    }
+    /**
+     * this function return string with color, type, direction and food value that collected insect
+     * @param boardData - data of the board
+     * @param boardSize - size of the board
+     */
+    @Override
+    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
+        super.returnAnswer(boardData, boardSize);
     }
 }
 
@@ -1114,7 +1141,7 @@ class Spider extends Insect implements DiagonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
+    public Direction getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
         Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
@@ -1143,9 +1170,9 @@ class Spider extends Insect implements DiagonalMoving {
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
         if (key == 0) {
-            travelDirection(Direction.NE, boardData, boardSize);
+            return Direction.NE;
         } else {
-            travelDirection(bestDirection, boardData, boardSize);
+            return bestDirection;
         }
     }
 
@@ -1156,7 +1183,7 @@ class Spider extends Insect implements DiagonalMoving {
      * @param boardSize - size of the board
      */
     @Override
-    public void travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
         switch (direction) {
             case NE:
                 value = travelDiagonally(Direction.NE, this.entityPosition, this.color, boardData, boardSize);
@@ -1171,12 +1198,18 @@ class Spider extends Insect implements DiagonalMoving {
                 value = travelDiagonally(Direction.NW, this.entityPosition, this.color, boardData, boardSize);
                 break;
             default:
-                return;
+                return 0;
         }
-        String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
-                + direction.getTextRepresentation() + " " + value;
-        Main.write(letter);
+        return value;
+    }
+    /**
+     * this function return string with color, type, direction and food value that collected insect
+     * @param boardData - data of the board
+     * @param boardSize - size of the board
+     */
+    @Override
+    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
+        super.returnAnswer(boardData, boardSize);
     }
 }
 
@@ -1204,7 +1237,7 @@ class Grasshopper extends Insect {
      * @param boardSize - size of the board
      */
     @Override
-    public void getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
+    public Direction getBestDirection(Map<String, BoardEntity> boardData, int boardSize) {
         Map<Integer, Direction> values = new HashMap<>();
         ArrayList<Integer> maxValues = new ArrayList<>();
         Direction bestDirection;
@@ -1233,9 +1266,9 @@ class Grasshopper extends Insect {
         key = Collections.max(maxValues);
         bestDirection = values.get(key);
         if (key == 0) {
-            travelDirection(Direction.N, boardData, boardSize);
+            return Direction.N;
         } else {
-            travelDirection(bestDirection, boardData, boardSize);
+            return bestDirection;
         }
     }
 
@@ -1246,7 +1279,7 @@ class Grasshopper extends Insect {
      * @param boardSize - size of the board
      */
     @Override
-    public void travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
+    public int travelDirection(Direction direction, Map<String, BoardEntity> boardData, int boardSize) {
         switch (direction) {
             case N:
                 value = travelOrthogonally(Direction.N, this.entityPosition, this.color, boardData, boardSize);
@@ -1261,12 +1294,19 @@ class Grasshopper extends Insect {
                 value = travelOrthogonally(Direction.W, this.entityPosition, this.color, boardData, boardSize);
                 break;
             default:
-                return;
+                return 0;
         }
-        String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
-                + direction.getTextRepresentation() + " " + value;
-        Main.write(letter);
+        return value;
+    }
+
+    /**
+     * this function return string with color, type, direction and food value that collected insect
+     * @param boardData - data of the board
+     * @param boardSize - size of the board
+     */
+    @Override
+    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
+        super.returnAnswer(boardData, boardSize);
     }
 
     /**
