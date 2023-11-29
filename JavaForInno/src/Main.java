@@ -57,8 +57,8 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            bw = new BufferedWriter(new FileWriter("output.txt"));
-            br = new BufferedReader(new FileReader("input.txt"));
+            bw = new BufferedWriter(new FileWriter("src/output.txt"));
+            br = new BufferedReader(new FileReader("src/input.txt"));
             String currentString;
             String strD = br.readLine();
             String strN = br.readLine();
@@ -195,7 +195,10 @@ public class Main {
                 }
             }
             for (Insect insect : insects) {
-                insect.returnAnswer(gameBoard.getBoardData(), d);
+                String direction = gameBoard.getDirection(insect).getTextRepresentation();
+                String  letter = InsectColor.colorToString(insect.color) + " " + insect.getTypeOfInsect().getName()
+                        + " " + direction + " " + gameBoard.getDirectionSum(insect);
+                Main.write(letter);
             }
             finish();
         } catch (IOException e) {
@@ -317,8 +320,7 @@ class Board {
      * @return the Direction of the Insect
      */
     public Direction getDirection(Insect insect) {
-        // Implementation
-        return null;
+        return insect.getBestDirection(boardData, size);
     }
 
     /**
@@ -328,8 +330,7 @@ class Board {
      * @return the sum of directions for the specified Insect
      */
     public int getDirectionSum(Insect insect) {
-        // Implementation
-        return 0;
+        return insect.travelDirection(getDirection(insect), boardData, size);
     }
 }
 
@@ -510,18 +511,6 @@ class Insect extends BoardEntity {
         return 0;
     }
 
-    /**
-     * this function return string with color, type, direction and food value that collected insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     */
-    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
-        Direction direction = getBestDirection(boardData, boardSize);
-        String letter;
-        letter = InsectColor.colorToString(color) + " " + getClass().getName() + " "
-                + direction.getTextRepresentation() + " " + travelDirection(direction, boardData, boardSize);
-        Main.write(letter);
-    }
 
     /**
      * function that will get color of Insect
@@ -1010,16 +999,6 @@ class Ant extends Insect implements OrthogonalMoving, DiagonalMoving {
         }
         return value;
     }
-
-    /**
-     * this function return string with color, type, direction and food value that collected insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     */
-    @Override
-    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
-        super.returnAnswer(boardData, boardSize);
-    }
 }
 
 /**
@@ -1107,15 +1086,6 @@ class Butterfly extends Insect implements OrthogonalMoving {
         }
         return value;
     }
-    /**
-     * this function return string with color, type, direction and food value that collected insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     */
-    @Override
-    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
-        super.returnAnswer(boardData, boardSize);
-    }
 }
 
 /**
@@ -1201,15 +1171,6 @@ class Spider extends Insect implements DiagonalMoving {
                 return 0;
         }
         return value;
-    }
-    /**
-     * this function return string with color, type, direction and food value that collected insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     */
-    @Override
-    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
-        super.returnAnswer(boardData, boardSize);
     }
 }
 
@@ -1297,16 +1258,6 @@ class Grasshopper extends Insect {
                 return 0;
         }
         return value;
-    }
-
-    /**
-     * this function return string with color, type, direction and food value that collected insect
-     * @param boardData - data of the board
-     * @param boardSize - size of the board
-     */
-    @Override
-    public void returnAnswer(Map<String, BoardEntity> boardData, int boardSize) {
-        super.returnAnswer(boardData, boardSize);
     }
 
     /**
