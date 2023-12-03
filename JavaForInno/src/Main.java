@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * its the main class there we have all params and implementations of game mechanics
+ */
 public class Main {
 
     /**
@@ -57,8 +60,8 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            bw = new BufferedWriter(new FileWriter("src/output.txt"));
-            br = new BufferedReader(new FileReader("src/input.txt"));
+            bw = new BufferedWriter(new FileWriter("output.txt"));
+            br = new BufferedReader(new FileReader("input.txt"));
             String currentString;
             String strD = br.readLine();
             String strN = br.readLine();
