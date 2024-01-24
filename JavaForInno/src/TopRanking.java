@@ -49,3 +49,7 @@ class Player{
         this.score = score;
     }
 }
+
+/**
+ * while writing this program my mate Kirill Efimovich gave me idea not to sort all massive
+ */

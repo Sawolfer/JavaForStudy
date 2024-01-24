@@ -44,3 +44,7 @@ public class NearlySortedSequence {
         return nums;
     }
 }
+/**
+ * while writing this program I use information from https://neerc.ifmo.ru/wiki/index.php?title=Сортировка_пузырьком
+ * for optimising my code
+ */
