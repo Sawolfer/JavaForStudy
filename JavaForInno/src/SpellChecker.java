@@ -1,5 +1,6 @@
 //Savva Ponomarev
 
+import java.sql.PreparedStatement;
 import java.util.*;
 
 public class  SpellChecker {
@@ -23,24 +24,19 @@ public class  SpellChecker {
 
         n = Integer.parseInt(sc.nextLine());
         CustHashMap<String, Integer> wordsStorage2 = new CustHashMap<>(n);
-
+        ArrayList<String> answer = new ArrayList<>();
         inputString = sc.nextLine();
         String[] words2 = inputString.split(" ");
-        for (String word : words2){
-            if (wordsStorage2.get(word) != null){
-                int tmp = wordsStorage2.get(word);
-                wordsStorage2.put(word, tmp+1);
-            } else {
+        for(String word : words2) {
+            if (wordsStorage.get(word) == null) {
                 wordsStorage2.put(word, 1);
             }
         }
-        ArrayList<String> answer = new ArrayList<>();
-
-        for (String word : words2){
-            if (wordsStorage.get(word)!=null){
-                wordsStorage2.remove(word);
-            } else if (!answer.contains(word)){
+        List<Pair<String, Integer>> answer2 = wordsStorage2.entrySet();
+        for(String word : words2){
+            if (wordsStorage2.get(word)!= null){
                 answer.add(word);
+                wordsStorage2.remove(word);
             }
         }
 
