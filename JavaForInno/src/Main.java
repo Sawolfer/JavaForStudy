@@ -1,4 +1,8 @@
+import com.sun.javafx.logging.JFRInputEvent;
+
+import java.beans.XMLEncoder;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,35 +13,84 @@ public class Main {
     public static void main(String[] args) {
 
         sc = new Scanner(System.in);
-        int n = sc.nextInt();
+        int n =  Integer.parseInt(sc.nextLine());
         HashMap<Integer, String> students = new HashMap(n);
-        int[] number = new int[n];
+        int[] numbers = new int[n];
         for (int i = 0; i < n; i++){
-            String currentString = sc.next();
+            String currentString = sc.nextLine();
             String[] words = currentString.split(" ");
             students.put(Integer.parseInt(words[0]), words[1] + " " + words[2]);
             int tmp = Integer.parseInt(words[0]);
-            number[i] = tmp;
+            numbers[i] = tmp;
         }
 
+        int median = findMedian(numbers);
 
+        System.out.printf(students.get(median));
 
     }
 
-    private int[] sort(int[] arr){
+    public static int findMedian(int[] arr){
 
-        for (int i = 0; i < arr.length; i++){
-            boolean flag = arr[i]>arr[i+1];
-            while (flag){
-                flag = false;
-                int tmp = arr[i+1];
-                arr[i+1] = arr[i];
-                arr[i] = tmp;
-                flag = arr[i]>arr[i+1];
-            }
-
+        if (arr.length ==1){
+            return arr[0];
         }
-        return arr;
+
+        int numberGroups = (int) Math.ceil((double) arr.length/5);
+        int[] medians = new int[numberGroups];
+
+        for (int i = 0; i < numberGroups; i++) {
+            int groupSize = Math.min(5, arr.length - i * 5);
+            int[] group = new int[groupSize];
+            System.arraycopy(arr, i * 5, group, 0, groupSize);
+            group = sort(group);
+            medians[i] = group[groupSize / 2];
+        }
+
+        int medianOfMedians = findMedian(medians);
+
+        int[] smaller = new int[arr.length];
+        int[] greater = new int[arr.length];
+        int smallerCount = 0;
+        int greaterCount = 0;
+
+        for (int num : arr) {
+            if (num < medianOfMedians) {
+                smaller[smallerCount++] = num;
+            } else if (num > medianOfMedians) {
+                greater[greaterCount++] = num;
+            }
+        }
+
+        if (smallerCount == arr.length / 2) {
+            return medianOfMedians;
+        } else if (smallerCount > arr.length / 2) {
+            return findMedian(Arrays.copyOf(smaller, smallerCount));
+        } else {
+            return findMedian(Arrays.copyOf(greater, greaterCount));
+        }
+
+    }
+    private static int[] sort(int nums[]){
+
+        int tmp;
+        boolean t = true;
+        int n = 0;
+        while (t){
+            t = false;
+            for (int i = 0; i< nums.length - 1 - n; i++){
+                int j = i+1;
+                if (nums[i] > nums[j]){
+                    tmp = nums[i];
+                    nums[i] = nums[j];
+                    nums[j] = tmp;
+                    t = true;
+                }
+            }
+            n++;
+        }
+
+        return nums;
     }
 
 }
