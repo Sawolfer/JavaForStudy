@@ -1,7 +1,3 @@
-import com.sun.javafx.logging.JFRInputEvent;
-
-import java.beans.XMLEncoder;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,51 +22,86 @@ public class Main {
 
         int median = findMedian(numbers);
 
-        System.out.printf(students.get(median));
+        System.out.println(students.get(median));
 
+
+    }
+
+    public static int recheck (int[] arr, int median){
+        int smaller = 0;
+        int greater = 0;
+        int[] smallerNums = new int[arr.length];
+        int[] greaterNums = new int[arr.length];
+        for (int item : arr){
+            if (item > median){
+                greaterNums[greater] = item;
+                greater++;
+            } else {
+                smallerNums[smaller] = item;
+                smaller++;
+            }
+        }
+
+        if (smaller-1 == arr.length/2 || greater-1 == arr.length/2){
+            return median;
+        } else if (smaller > arr.length/2){
+            return (findMedian(Arrays.copyOf(smallerNums, smaller)));
+        } else {
+            return (findMedian(Arrays.copyOf(greaterNums, greater)));
+        }
     }
 
     public static int findMedian(int[] arr){
 
-        if (arr.length ==1){
+        if (arr.length == 1){
             return arr[0];
         }
-
-        int numberGroups = (int) Math.ceil((double) arr.length/5);
-        int[] medians = new int[numberGroups];
-
-        for (int i = 0; i < numberGroups; i++) {
-            int groupSize = Math.min(5, arr.length - i * 5);
-            int[] group = new int[groupSize];
-            System.arraycopy(arr, i * 5, group, 0, groupSize);
-            group = sort(group);
-            medians[i] = group[groupSize / 2];
+        if (arr.length <=5){
+            arr = sort(arr);
+            return arr[arr.length/2];
         }
 
-        int medianOfMedians = findMedian(medians);
+        int numberOfArrays = (int) Math.ceil((double) arr.length/5);
+        int[] medians = new int[numberOfArrays];
 
-        int[] smaller = new int[arr.length];
-        int[] greater = new int[arr.length];
+        for (int i = 0; i < numberOfArrays; i++){
+            int size = Math.min(5, arr.length - i * 5);
+            int[] tmpArr = Arrays.copyOfRange(arr, i*5, i*5 + size);
+            int newMedian = findMedian(tmpArr);
+            medians[i] = newMedian;
+        }
+
+        int median = findMedian(medians);
+
+        int[] smallArray = new int[arr.length];
+        int[] bigArray = new int[arr.length];
         int smallerCount = 0;
-        int greaterCount = 0;
+        int biggerCount = 0;
 
-        for (int num : arr) {
-            if (num < medianOfMedians) {
-                smaller[smallerCount++] = num;
-            } else if (num > medianOfMedians) {
-                greater[greaterCount++] = num;
+        for (int num : arr){
+            if (num > median){
+                bigArray[biggerCount] = num;
+                biggerCount++;
+            } else if ( num < median){
+                smallArray[smallerCount] = num;
+                smallerCount++;
             }
         }
+        bigArray[biggerCount] = median;
+        biggerCount++;
+        smallArray[smallerCount] = median;
+        smallerCount++;
 
-        if (smallerCount == arr.length / 2) {
-            return medianOfMedians;
-        } else if (smallerCount > arr.length / 2) {
-            return findMedian(Arrays.copyOf(smaller, smallerCount));
+        if (smallerCount == arr.length/2){
+            return median;
+        } else if (smallerCount > arr.length/2){
+            return findMedian(Arrays.copyOf(smallArray, smallerCount));
         } else {
-            return findMedian(Arrays.copyOf(greater, greaterCount));
+            return findMedian(Arrays.copyOf(bigArray, biggerCount));
         }
 
     }
+
     private static int[] sort(int nums[]){
 
         int tmp;
@@ -150,15 +181,10 @@ class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public void put(K key, V value) {
-        if (getEntry( key ) != null){
-            KeyValuePair<K, V> newPair = getEntry(key);
-            newPair.value = value;
-            size++;
-        } else {
-            int index = Math.abs(key.hashCode())%capacity;
-            hashTable[index].add(new KeyValuePair<>(key, value));
-            size++;
-        }
+        int index = Math.abs(key.hashCode())%capacity;
+        hashTable[index].add(new KeyValuePair<>(key, value));
+        size++;
+
     }
 
     @Override
