@@ -1,7 +1,6 @@
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+//Ponomarev Savva
+
+import java.util.*;
 
 public class Main {
 
@@ -11,110 +10,35 @@ public class Main {
         sc = new Scanner(System.in);
         int n =  Integer.parseInt(sc.nextLine());
         HashMap<Integer, String> students = new HashMap(n);
-        int[] numbers = new int[n];
+        ArrayList<Integer> numbers = new ArrayList<>();
         for (int i = 0; i < n; i++){
             String currentString = sc.nextLine();
             String[] words = currentString.split(" ");
             students.put(Integer.parseInt(words[0]), words[1] + " " + words[2]);
             int tmp = Integer.parseInt(words[0]);
-            numbers[i] = tmp;
+            numbers.add(tmp);
         }
 
-        int median = findMedian(numbers);
+        int median = findMedian(numbers, numbers.size()/2);
 
         System.out.println(students.get(median));
 
 
     }
 
-    public static int recheck (int[] arr, int median){
-        int smaller = 0;
-        int greater = 0;
-        int[] smallerNums = new int[arr.length];
-        int[] greaterNums = new int[arr.length];
-        for (int item : arr){
-            if (item > median){
-                greaterNums[greater] = item;
-                greater++;
-            } else {
-                smallerNums[smaller] = item;
-                smaller++;
-            }
-        }
-
-        if (smaller-1 == arr.length/2 || greater-1 == arr.length/2){
-            return median;
-        } else if (smaller > arr.length/2){
-            return (findMedian(Arrays.copyOf(smallerNums, smaller)));
-        } else {
-            return (findMedian(Arrays.copyOf(greaterNums, greater)));
-        }
-    }
-
-    public static int findMedian(int[] arr){
-
-        if (arr.length == 1){
-            return arr[0];
-        }
-        if (arr.length <=5){
-            arr = sort(arr);
-            return arr[arr.length/2];
-        }
-
-        int numberOfArrays = (int) Math.ceil((double) arr.length/5);
-        int[] medians = new int[numberOfArrays];
-
-        for (int i = 0; i < numberOfArrays; i++){
-            int size = Math.min(5, arr.length - i * 5);
-            int[] tmpArr = Arrays.copyOfRange(arr, i*5, i*5 + size);
-            int newMedian = findMedian(tmpArr);
-            medians[i] = newMedian;
-        }
-
-        int median = findMedian(medians);
-
-        int[] smallArray = new int[arr.length];
-        int[] bigArray = new int[arr.length];
-        int smallerCount = 0;
-        int biggerCount = 0;
-
-        for (int num : arr){
-            if (num > median){
-                bigArray[biggerCount] = num;
-                biggerCount++;
-            } else if ( num < median){
-                smallArray[smallerCount] = num;
-                smallerCount++;
-            }
-        }
-        bigArray[biggerCount] = median;
-        biggerCount++;
-        smallArray[smallerCount] = median;
-        smallerCount++;
-
-        if (smallerCount == arr.length/2){
-            return median;
-        } else if (smallerCount > arr.length/2){
-            return findMedian(Arrays.copyOf(smallArray, smallerCount));
-        } else {
-            return findMedian(Arrays.copyOf(bigArray, biggerCount));
-        }
-
-    }
-
-    private static int[] sort(int nums[]){
+    private static ArrayList<Integer> sort(ArrayList<Integer> nums){
 
         int tmp;
         boolean t = true;
         int n = 0;
         while (t){
             t = false;
-            for (int i = 0; i< nums.length - 1 - n; i++){
+            for (int i = 0; i< nums.size() - 1 - n; i++){
                 int j = i+1;
-                if (nums[i] > nums[j]){
-                    tmp = nums[i];
-                    nums[i] = nums[j];
-                    nums[j] = tmp;
+                if (nums.get(i) > nums.get(j)){
+                    tmp = nums.get(i);
+                    nums.set(i, nums.get(j));
+                    nums.set(j, tmp);
                     t = true;
                 }
             }
@@ -122,6 +46,53 @@ public class Main {
         }
 
         return nums;
+    }
+
+    public static int findMedian(ArrayList<Integer> arr, int searchIndex){
+
+        if (arr.size() == 1){
+            return arr.get(0);
+        }
+        if (arr.size() == 2){
+            return sort(arr).get(searchIndex);
+        }
+
+        int numberOfArrays = (int) Math.ceil((double)(arr.size())/5);
+        ArrayList<Integer> medians = new ArrayList<>();
+
+        for (int i = 0; i < numberOfArrays; i++){
+            int size = Math.min(5, arr.size() - i * 5);
+            ArrayList<Integer> tmpArr = new ArrayList<>();
+            tmpArr.addAll(arr.subList(i*5, i*5 + size));
+            int newMedian = sort(tmpArr).get(tmpArr.size()/2);
+            medians.add(newMedian);
+        }
+
+        int median;
+        if (medians.size()%2==1){
+            median = sort(medians).get(medians.size()/2);
+        } else {
+            median = sort(medians).get((medians.size())/2 - 1);
+        }
+
+        ArrayList<Integer> smallArray = new ArrayList<>();
+        ArrayList<Integer> bigArray = new ArrayList<>();
+
+        for (int num : arr){
+            if (num > median){
+                bigArray.add(num);
+            }
+            if ( num <= median){
+                smallArray.add(num);
+            }
+        }
+
+        if (smallArray.size() > searchIndex){
+            return findMedian(smallArray, searchIndex);
+        } else {
+            return findMedian(bigArray, searchIndex - smallArray.size());
+        }
+
     }
 
 }
