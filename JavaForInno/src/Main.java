@@ -63,7 +63,9 @@ public class Main {
         for (int i = 0; i < numberOfArrays; i++){
             int size = Math.min(5, arr.size() - i * 5);
             ArrayList<Integer> tmpArr = new ArrayList<>();
-            tmpArr.addAll(arr.subList(i*5, i*5 + size));
+            for (int j = i*5; j < i*5 + size; j ++){
+                tmpArr.add(arr.get(j));
+            }
             int newMedian = sort(tmpArr).get(tmpArr.size()/2);
             medians.add(newMedian);
         }
