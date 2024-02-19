@@ -1,15 +1,22 @@
 import java.util.Scanner;
 
-public class Main {
+class RestoringSpaces{
 
     static Scanner sc;
     public static void main(String[] args) {
 
         sc = new Scanner(System.in);
-        for (int i = 0; i< 13; i++){
-            int n = sc.nextInt();
-            System.out.print((n*n - 2*n + 7)%13 + " ");
+        int countWords = sc.nextInt();
+        int countLetters = sc.nextInt();
+        int[] dp = new int[countLetters+1];
+
+        String[] inputWords = new String[countWords];
+        for( int i = 0; i < countWords; i++){
+            inputWords[i] = sc.next();
         }
+
+        
 
     }
 }
+
