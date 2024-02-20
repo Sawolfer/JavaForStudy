@@ -1,4 +1,5 @@
-import java.lang.ref.SoftReference;
+//Ponomarev Savva
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class RestoringSpaces{
@@ -21,22 +22,29 @@ class RestoringSpaces{
             dp[i] = 0;
         }
         int lastPos = 0;
+        dp[0]=1;
         for(int i = 0; i < countLetters+1; i++){
 
             for (String word : inputWords){
-                if((i - word.length() - lastPos) >= 0 && inputString.substring((i - word.length()), i).equals(word)){
-                    dp[i] = 1;
-                    lastPos = i;
+                if((i + word.length()) <= countLetters && dp[i] == 1 && inputString.substring(i, i + word.length()).equals(word)){
+                    dp[i+word.length()] = 1;
+//                    lastPos = i;
                 }
             }
         }
-        for (int i = 0; i < inputString.length(); i++){
-            if (dp[i] == 0){
-                System.out.print(inputString.charAt(i));
-            } else {
-                System.out.print(" " + inputString.charAt(i));
+        ArrayList<String> answer = new ArrayList<>();
+        int end = dp.length-1;
+        for (int i = dp.length-1; i >= 0; i--){
+            for(String word : inputWords){
+                if ( dp[i] == 1 && dp[end] == 1 && inputString.substring(i, end).equals(word)){
+                    answer.add(word);
+                    end = i;
+                }
             }
+        }
 
+        for(int i = answer.size()-1; i >= 0; i--){
+            System.out.print(answer.get(i) + " ");
         }
 
     }
