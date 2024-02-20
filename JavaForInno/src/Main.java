@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -22,17 +23,23 @@ public class Main {
         ArrayList<String> L3 = new ArrayList<>();
 
         L1.add("_");
-
-        for (int i = 2; i < outputCounts[0]; i++){
-            StringBuilder word = new StringBuilder();
-
-            for (String letter : alphabet){
-                
-            }
-        }
+        StringBuilder tmp = new StringBuilder();
+        generateCombinations(alphabet, tmp, L1, 0, 4);
 
         for (String words : L1){
             System.out.println(words);
+        }
+    }
+    public static void generateCombinations(ArrayList<String> inputArray, StringBuilder currentCombination, List <String> output, int start, int k) {
+        if (k == 0) {
+            output.add(currentCombination.toString());
+            return;
+        }
+
+        for (int i = start; i < inputArray.size(); i++) {
+            currentCombination.append(inputArray.get(i));
+            generateCombinations(inputArray, currentCombination, output, i, k - 1);
+            currentCombination.deleteCharAt(currentCombination.length() - 1);
         }
     }
 
