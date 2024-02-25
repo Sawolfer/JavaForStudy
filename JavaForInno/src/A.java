@@ -20,7 +20,7 @@ public class A {
         ArrayList<String> L2 = new ArrayList<>();
         ArrayList<String> L3 = new ArrayList<>();
 
-        if (outputCounts[0] > 0) {
+        if (outputCounts[0] > 0 && !alphabet.isEmpty()) {
             L1.add("_");
             for (int i = 2; i < (outputCounts[0] * 2); i+=2) {
                 if (L1.size() == outputCounts[0]) break;
@@ -33,7 +33,7 @@ public class A {
                 }
             }
         }
-        if (outputCounts[1] > 1){
+        if (outputCounts[1] > 1 && !alphabet.isEmpty()){
             for ( int i = alphabet.size(); i < (outputCounts[1] + 1); i++){
                 if (L2.size() == outputCounts[1]) break;
                 List<String> tmp = generate(i);
@@ -45,8 +45,7 @@ public class A {
                 }
             }
         }
-        if (L2.size() == 0) L2.add("_");
-        if (alphabet.size() == 1) {
+        if (alphabet.size() <= 1 ) {
             for (int i = 0; i < outputCounts[2]; i++){
                 L3.add("_");
             }
@@ -63,7 +62,14 @@ public class A {
                 }
             }
         }
-        if (L3.size() == 0) L3.add("_");
+        if (alphabet.isEmpty()) {
+            for (int i = 0; i < outputCounts[1]; i++){
+                L2.add("_");
+            }
+            for (int i = 0; i < outputCounts[0]; i++){
+                L1.add("_");
+            }
+        }
 
         for (String words : L1){
             System.out.print(words + " ");
@@ -124,21 +130,20 @@ public class A {
     }
 
     public static List<String> generate(int length) {
-        List<String> generateList = new ArrayList<>();
-        recursiveGenerate(length, "", generateList);
-
-        return generateList;
+        List<String> tmp = new ArrayList<>();
+        wordGenerator(length, "", tmp);
+        return tmp;
     }
 
-    public static void recursiveGenerate(int length, String current, List<String> generateList) {
+    public static void wordGenerator(int length, String current, List<String> tmp) {
         if (current.length() == length){
-            generateList.add(current);
+            tmp.add(current);
             return;
         }
 
         for (int i = 0; i < alphabet.size(); i++) {
-            char currentChar = alphabet.get(i).charAt(0);
-            recursiveGenerate(length, current + currentChar, generateList);
+            String letter = Character.toString(alphabet.get(i).charAt(0));
+            wordGenerator(length, current + letter, tmp);
         }
     }
 

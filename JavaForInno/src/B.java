@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-
 public class B {
     static Scanner sc;
     static HashMap<String, ArrayList<States>> FSA;
@@ -16,7 +15,6 @@ public class B {
         S = sc.nextInt();
         F = sc.nextInt();
         N = sc.nextInt();
-        String currentLine;
         String[] states = new String[Q];
         String[] alphabet = new String[S];
         String[] finalStates = new String[F];
@@ -54,7 +52,7 @@ public class B {
         }
 
         for (String word : words){
-            if (check(word, finalStates, startState) == 1){
+            if (check(word, finalStates, startState)){
                 System.out.print("A ");
             } else {
                 System.out.print("R ");
@@ -63,36 +61,34 @@ public class B {
 
     }
 
-    public static int check(String word, String[] finalStates, String currentState){
+    public static boolean check(String word, String[] finalStates, String currentState){
 
         if (word.equals("_")){
             for (String state : finalStates){
                 if (state.equals(startState)){
-                    return 1;
+                    return true;
                 }
             }
-            return 0;
+            return false;
         }
-
         if (word.length()==1){
             for(States letter : FSA.get(word)){
                 if (letter.getCurrentState().equals(currentState)){
                     for (String state : finalStates){
-                        if (letter.getNewState().equals(state)) return 1;
+                        if (letter.getNewState().equals(state)) return true;
                     }
                 }
             }
-            return 0;
+            return false;
         }
-
         for (States letter : FSA.get(Character.toString(word.charAt(0)))){
             if (letter.getCurrentState().equals(currentState)){
-                if (check(word.substring(1, word.length()), finalStates, letter.getNewState()) >= 1){
-                    return 1;
+                if (check(word.substring(1, word.length()), finalStates, letter.getNewState())){
+                    return true;
                 }
             }
         }
-        return 0;
+        return false;
 
     }
 
