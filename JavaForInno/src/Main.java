@@ -1,8 +1,5 @@
 import java.awt.image.AreaAveragingScaleFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main  {
 
@@ -12,89 +9,111 @@ public class Main  {
         sc = new Scanner(System.in);
 
         int n = sc.nextInt();
-        int[][] arr = new int[n][2]; 
-        for (int i = 0; i < n; ){
+        Item<Integer>[] arr = new Item[n];
+        for (int i = 0; i < n; i++){
             int a, b;
             a = sc.nextInt();
             b = sc.nextInt();
-            arr[i][0] = a;
-            arr[i][1] = b;
+            Item tmp = new Item(a, b, i+1);
+            arr[i] = tmp;
         }
-        int sortingIndex = 1;
-        ArrayList<int[]> answer = new ArrayList<>();
-        answer  = SavvaPonomarev_bucket_srt(arr, sortingIndex);
-        sortingIndex--;
-        answer = SavvaPonomarev_bucket_srt(answer, sortingIndex);
-        for (int i = 0; i < arr.length; i++){
-            System.out.println(arr[i][0] + " " + arr[i][1]);
+
+        arr = SavvaPonomarev_count_sort(arr, 1);
+        arr = SavvaPonomarev_bucket_srt(arr, 0);
+        for (int i = 0; i < (arr.length/2); i++){
+            Item tmp = arr[i];
+            arr[i] = arr[arr.length-i - 1];
+            arr[arr.length-i - 1] = tmp;
+        }
+
+        for (Item item : arr){
+            System.out.print(item.getIndex() + " ");
         }
     }
 
-    public static <T> ArrayList<T> SavvaPonomarev_bucket_srt(T[][] arr, int sortingIndex){
-        ArrayList<T> answer = new ArrayLisrt<>();
 
-        if (arr == null || arr.length == 0){
-            return null;
+    public static Item[]  SavvaPonomarev_bucket_srt(Item[] arr, int indexToCompare){
+        Item[] answer = new Item[arr.length];
+
+        Integer[] toMax = new Integer[arr.length];
+        for ( int i = 0; i < arr.length; i++){
+            String tmp = String.valueOf(arr[i].getIndex(indexToCompare));
+            toMax[i] = Integer.parseInt(tmp);
         }
 
-        int numberOfBuckets = arr.length;
-        ArrayList<ArrayList<T>> buckets = new ArrayList<>(numberOfBuckets);
+        int numberOfBuckets = maxT(toMax);
+        ArrayList<ArrayList<Item>> buckets = new ArrayList<>(numberOfBuckets + 1);
 
-        for (int i = 0; i < numberOfBuckets; i++){
-            ArrayList<T> tmp = new ArrayList<>();
+        for (int i = 0; i < numberOfBuckets+1; i++){
+            ArrayList<Item> tmp = new ArrayList<>();
             buckets.add(tmp);
         }
 
-        for (int i = 0; i < numberOfBuckets; i++){
-            T item = arr[i][sortingIndex];
-            int index = (int)( item.hashCode() % numberOfBuckets );
+        for (int i = 0; i < arr.length; i++){
+            Item item = arr[i];
+            int index = ((int) (item.getIndex(indexToCompare)));
             buckets.get(index).add(item);
         }
 
-        for (ArrayList<> bucket : buckets){
-            bucket = SavvaPonomarev_count_sort(bucket);
+        for (List<Item> bucket : buckets){
+            sort(bucket);
         }
-        
-        
-        for (int i = 0; i < numberOfBuckets; i++){
-            for (T item : buckets.get(i)){
-                answer.add(item);
+
+        int j =0;
+        for (int i = 0; i < numberOfBuckets + 1; i++){
+            for (Item item : buckets.get(i)){
+                if (item != null){
+                    answer[j] = item;
+                    j++;
+                }
             }
         }
         return answer;
     }
 
-    public static <T extends Comparable<T>> ArrayList<T> SavvaPonomarev_count_sort(T[][] arr, int sortingIndex){
-        int[] tmp = new int[arr.length];
-        for (int i =0; i< arr.length; i++){
-            tmp[i] = arr[i][sortingIndex];
+    public static void sort(List<Item> arr) {
+        for (int i = 1; i < arr.size(); i++) {
+            Item key = arr.get(i);
+            int j = i - 1;
+            while ((j >= 0) && (arr.get(j).getSecond().compareTo(key.getSecond()) > 0)) {
+                arr.set(j+1, arr.get(j));
+                j--;
+            }
+            arr.set(j+1, key);
         }
-        int maxi = (int) maxT(tmp);
-        int[] count = new int[ maxi + 1];
+    }
 
-        ArrayList<T> answer = new ArrayList<>(arr.length);
+    public static Item[] SavvaPonomarev_count_sort(Item[] arr, int sortingIndex){
+        Integer[] tmp = new Integer[arr.length];
+
+        for (int i =0; i< arr.length; i++){
+            tmp[i] = (int) arr[i].getIndex(sortingIndex);
+        }
+        int maxi = maxT(tmp);
+        int[] count = new int[maxi + 1];
+
+        Item[] answer = new Item[arr.length];
 
         for (int i = 0; i < arr.length; i++){
-            T item = arr[i][sortingIndex];
-            count[(item.hashCode())%(count.length) + 1]++;
+            Item item = arr[i];
+            count[(int)(item.getIndex(sortingIndex))]++;
         }
-        for (int i = 0; i < maxi; i++){
+        for (int i = 1; i < count.length; i++){
             count[i] += count[i-1];
         }
 
-        for (int i = arr.length - 1; i >= 0; i--){
-            T item = arr[i][sortingIndex];
-            int index =count[item.hashCode() % count.length];
-            answer.set(index - 1, item);
-            count[index]--;
+        for (int i = 0; i < arr.length; i++){
+            Item item = arr[i];
+            int index = count[(Integer) item.getIndex(sortingIndex)]-1;
+            answer[index] = item;
+            count[(Integer) item.getIndex(sortingIndex)]-=1;
         }
         return answer;
     }
-    private static <T extends Comparable<T>> T maxT(T[] arr){
-
-        T answer = arr[0];
-        for (T item : arr){
-            if (item.compareTo(answer) >= 1){
+    private static int maxT(Integer[] arr){
+        int answer = arr[0];
+        for (int item : arr){
+            if (item >= answer){
                 answer = item;
             }
         }
@@ -102,8 +121,32 @@ public class Main  {
     }
 
 }
+ class Item<F extends Comparable<F>>{
+    F first;
+    F second;
+    F index;
+    Item(F first, F second, F index){
+        this.first = first;
+        this.second = second;
+        this.index = index;
+    }
 
+    public F getFirst() {
+        return first;
+    }
 
+    public F getSecond() {
+        return second;
+    }
+    public F getIndex(){
+        return index;
+    }
+
+    public F getIndex(int i){
+        if (i==0) return first;
+        else return second;
+    }
+}
 
 
 
