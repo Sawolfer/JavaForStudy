@@ -1,4 +1,4 @@
-//Savva Ponomarevs
+//SavvaPonomarev
 import java.util.*;
 
 public class Main  {
@@ -18,10 +18,14 @@ public class Main  {
             arr[i] = tmp;
         }
 
-        arr = SavvaPonomarev_count_sort(arr, 1);
+        arr = SavvaPonomarev_bucket_srt(arr, 1);
 
-        arr = SavvaPonomarev_bucket_srt(arr, 0);
-
+        arr = SavvaPonomarev_count_sort(arr, 0);
+        for (int i = 0; i < (arr.length/2); i++){
+            Item tmp = arr[i];
+            arr[i] = arr[arr.length-i - 1];
+            arr[arr.length-i - 1] = tmp;
+        }
         for (Item item : arr){
             System.out.print(item.getIndex() + " ");
         }
@@ -62,7 +66,7 @@ public class Main  {
         }
 
         int j =0;
-        for (int i = numberOfBuckets; i >= 0; i--){
+        for (int i = 0; i <= numberOfBuckets; i++){
             for (Item item : buckets.get(i)){
                 if (item != null){
                     answer[j] = item;
@@ -77,7 +81,7 @@ public class Main  {
         for (int i = 1; i < arr.size(); i++) {
             Item key = arr.get(i);
             int j = i - 1;
-            while ((j >= 0) && (arr.get(j).getSecond().compareTo(key.getSecond()) >= 0)) {
+            while ((j >= 0) && (arr.get(j).getSecond().compareTo(key.getSecond()) > 0)) {
                 Item tmp = arr.get(j+1);
                 arr.set(j+1, arr.get(j));
                 arr.set(j, tmp);
