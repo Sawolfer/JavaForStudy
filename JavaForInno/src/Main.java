@@ -19,17 +19,13 @@ public class Main  {
         }
 
         arr = SavvaPonomarev_count_sort(arr, 1);
-        for (int i = 0; i < (arr.length/2); i++){
-            Item tmp = arr[i];
-            arr[i] = arr[arr.length-i - 1];
-            arr[arr.length-i - 1] = tmp;
-        }
+
         arr = SavvaPonomarev_bucket_srt(arr, 0);
-        for (int i = 0; i < (arr.length/2); i++){
-            Item tmp = arr[i];
-            arr[i] = arr[arr.length-i - 1];
-            arr[arr.length-i - 1] = tmp;
-        }
+        // for (int i = 0; i < (arr.length/2); i++){
+        //     Item tmp = arr[i];
+        //     arr[i] = arr[arr.length-i - 1];
+        //     arr[arr.length-i - 1] = tmp;
+        // }
 
         for (Item item : arr){
             System.out.print(item.getIndex() + " ");
@@ -69,7 +65,7 @@ public class Main  {
         }
 
         int j =0;
-        for (int i = 0; i < numberOfBuckets + 1; i++){
+        for (int i = numberOfBuckets; i > 0; i--){
             for (Item item : buckets.get(i)){
                 if (item != null){
                     answer[j] = item;
