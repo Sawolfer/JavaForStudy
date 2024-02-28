@@ -1,4 +1,4 @@
-import java.awt.image.AreaAveragingScaleFilter;
+//Savva Ponomarevs
 import java.util.*;
 
 public class Main  {
@@ -19,6 +19,11 @@ public class Main  {
         }
 
         arr = SavvaPonomarev_count_sort(arr, 1);
+        for (int i = 0; i < (arr.length/2); i++){
+            Item tmp = arr[i];
+            arr[i] = arr[arr.length-i - 1];
+            arr[arr.length-i - 1] = tmp;
+        }
         arr = SavvaPonomarev_bucket_srt(arr, 0);
         for (int i = 0; i < (arr.length/2); i++){
             Item tmp = arr[i];
@@ -35,6 +40,10 @@ public class Main  {
     public static Item[]  SavvaPonomarev_bucket_srt(Item[] arr, int indexToCompare){
         Item[] answer = new Item[arr.length];
 
+        if (arr == null || arr.length == 0){
+            return arr;
+        }
+        
         Integer[] toMax = new Integer[arr.length];
         for ( int i = 0; i < arr.length; i++){
             String tmp = String.valueOf(arr[i].getIndex(indexToCompare));
@@ -86,6 +95,10 @@ public class Main  {
     public static Item[] SavvaPonomarev_count_sort(Item[] arr, int sortingIndex){
         Integer[] tmp = new Integer[arr.length];
 
+        if (arr == null || arr.length == 0){
+            return arr;
+        }
+
         for (int i =0; i< arr.length; i++){
             tmp[i] = (int) arr[i].getIndex(sortingIndex);
         }
@@ -111,6 +124,7 @@ public class Main  {
         return answer;
     }
     private static int maxT(Integer[] arr){
+        
         int answer = arr[0];
         for (int item : arr){
             if (item >= answer){
