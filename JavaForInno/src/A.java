@@ -129,22 +129,24 @@ public class A {
         return false;
     }
 
-    public static List<String> generate(int length) {
-        List<String> tmp = new ArrayList<>();
+    public static ArrayList<String> generate(int length) {
+        ArrayList<String> tmp = new ArrayList<>();
         wordGenerator(length, "", tmp);
         return tmp;
     }
 
-    public static void wordGenerator(int length, String current, List<String> tmp) {
-        if (current.length() == length){
-            tmp.add(current);
+    public static void wordGenerator(int length, String word, List<String> tmp) {
+
+        if (word.length() == length){
+            tmp.add(word);
             return;
         }
 
         for (int i = 0; i < alphabet.size(); i++) {
-            String letter = Character.toString(alphabet.get(i).charAt(0));
-            wordGenerator(length, current + letter, tmp);
+            String letter = alphabet.get(i);
+            wordGenerator(length, word + letter, tmp);
         }
+
     }
 
 
