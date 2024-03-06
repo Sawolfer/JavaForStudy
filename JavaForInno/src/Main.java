@@ -6,21 +6,23 @@ public class Main {
 
     static Scanner sc;
     public static void main(String[] args) {
-
         sc = new Scanner(System.in);
         int n = sc.nextInt();
-        ArrayList<Node> nodes = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+        ArrayList<Node<Integer>> nodes = new ArrayList<>();
+        Node<Integer> root = null;
         for (int i = 0; i < n; i++){
             int tmp = sc.nextInt();
-            Node<Integer> node = new Node<>(i, tmp);
-            nodes.add(node);
+            if (root == null) {
+                root = new Node<>(i, tmp);
+                nodes.add(root);
+            }
+            else root.insert(root, i, tmp, nodes);
         }
-        Node<Integer> root = new Node(1, nodes.get(0).value);
-        Node<Integer> tree = root;
-        for (int i = 1; i < n; i++) {
-            tree.insert(root, i, (Integer) nodes.get(i).value);
-        }
-        tree.print(root);
+        root.print(root, nodes);
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        System.out.println("Execution time in milliseconds: " + totalTime);
     }
 }
 
@@ -37,14 +39,20 @@ class Node<T extends Comparable<T>>{
         this.value = value;
     }
 
-    void insert(Node node, int key, T value){
+    void insert(Node node, int key, T value, ArrayList<Node<T>> nodes){
         if (value.compareTo((T)node.value)==-1){
-            if (node.left == null) node.left = new Node(key, value);
-            else insert(node.left, key, value);
+            if (node.left == null) {
+                node.left = new Node(key, value);
+                nodes.add(node.left);
+            }
+            else insert(node.left, key, value, nodes);
         }
         if (value.compareTo((T)node.value)>=0){
-            if (node.right == null) node.right = new Node(key, value);
-            else insert(node.right, key, value);
+            if (node.right == null) {
+                node.right = new Node(key, value);
+                nodes.add(node.right);
+            }
+            else insert(node.right, key, value, nodes);
         }
         updateHeight(node);
         balance(node);
@@ -105,29 +113,36 @@ class Node<T extends Comparable<T>>{
               leftRotate(node);
          }
     }
-
-    ArrayList<Node<T>> toArray(Node node){
-        if (node == null) return null;
-        ArrayList<Node<T>> nodes = new ArrayList<>();
-        if (node.left!=null) nodes.addAll(toArray(node.left));
-        if (node.right !=null) nodes.addAll(toArray(node.right));
-        nodes.add(node);
-        return nodes;
-    }
-    void print(Node tree){
-        if (tree == null){
+//    void print(Node tree, ArrayList<Node<T>> nodes){
+//        if (tree == null){
+//            System.out.println("0");
+//            return;
+//        }
+//        System.out.println(nodes.size());
+//        for (Node node: nodes){
+//            int leftIndex = (node.left !=null) ? nodes.indexOf(node.left) + 1 : -1;
+//            int rightIndex = (node.right !=null) ? nodes.indexOf(node.right) + 1 : -1;
+//            System.out.println(node.value + " " + leftIndex + " " + rightIndex);
+//        }
+//        System.out.println(nodes.indexOf(tree) + 1);
+//    }
+    void print(Node<T> tree, ArrayList<Node<T>> nodes) {
+        if (tree == null) {
             System.out.println("0");
             return;
         }
-        ArrayList<Node<T>> arr = new ArrayList<>();
-        arr = toArray(tree);
-        System.out.println(arr.size());
-        for (Node node: arr){
-            int leftIndex = (node.left !=null) ? arr.indexOf(node.left) + 1 : -1;
-            int rightIndex = (node.right !=null) ? arr.indexOf(node.right) + 1 : -1;
-            System.out.println(node.value + " " + leftIndex + " " + rightIndex);
-        }
-        System.out.println(arr.indexOf(tree) + 1);
-    }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append(nodes.size()).append("\n");
+
+        for (Node<T> node : nodes) {
+            int leftIndex = node.left != null ? nodes.indexOf(node.left) + 1 : -1;
+            int rightIndex = node.right != null ? nodes.indexOf(node.right) + 1 : -1;
+            sb.append(node.value).append(" ").append(leftIndex).append(" ").append(rightIndex).append("\n");
+        }
+
+        sb.append(nodes.indexOf(tree) + 1).append("\n");
+
+        System.out.print(sb.toString());
+    }
 }
