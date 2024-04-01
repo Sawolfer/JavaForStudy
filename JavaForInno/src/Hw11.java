@@ -1,6 +1,6 @@
 //Ponomarev Savva
 
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -26,8 +26,18 @@ class Main {
                 }
             }
         }
-
-        graph.solve(graph.getVertex(0));
+        int collection[] = new int[size];
+        graph.SavvaPonomarev_bfs(graph.getVertex(0), collection);
+        int answer = 1;
+        for (int i = 0; i < size; i++){
+            answer *= collection[i];
+        }
+        if (answer == 1){
+            System.out.println("YES");
+        }
+        else{
+            System.out.println("NO");
+        }
     }
 }
 
@@ -82,33 +92,18 @@ class Graph<V>{
         vertices.get((Integer)j.vertex).edges.add(new Edge(from, to));
     }
 
-    ArrayList<Vertex<V>> queue = new ArrayList<>();
-
-    public void SavvaPonomarev_bfs(Vertex<V> vertex){
+    public void SavvaPonomarev_bfs(Vertex<V> vertex, int[] collection){
         
         if (vertex.edges.size() == 1){
-            vertex.visited=true;
-            queue.add(vertex);
+            collection[(Integer)vertex.vertex] = 1;
             return;
         }
-        vertex.visited = true;
-        queue.add(vertex);
+        collection[(Integer)vertex.vertex] = 1;
 
         for (Edge<V> edge : vertex.edges){
-            if (edge.to.visited == false){
-                SavvaPonomarev_bfs(edge.to);
+            if (collection[(Integer)edge.to.vertex] == 0){
+                SavvaPonomarev_bfs(edge.to, collection);
             }
-        }
-    }
-
-    public void solve(Vertex<V> vertex){
-        SavvaPonomarev_bfs(vertex);
-
-        if (queue.size() == size){
-            System.out.println("YES");
-        }
-        else {
-            System.out.println("NO");
         }
     }
 }
