@@ -1,0 +1,13 @@
+A new Checking account created for max with an initial balance of $51.500.
+A new Savings account created for munir with an initial balance of $138.500.
+A new Checking account created for john with an initial balance of $439.500.
+A new Business account created for bob with an initial balance of $322.000.
+A new Savings account created for alice with an initial balance of $282.500.
+max successfully deposited $259.500. New Balance: $311.000.
+alice successfully deposited $325.500. New Balance: $608.000.
+john successfully withdrew $97.020. New Balance: $340.500. Transaction Fee: $1.980 (2.0%) in the system.
+A new Business account created for vanya with an initial balance of $220.000.
+bob's account is now deactivated.
+vanya's account is now deactivated.
+A new Checking account created for mazhor with an initial balance of $88.500.
+Error: Account notexists does not exist.
