@@ -12,8 +12,7 @@ public class Main  {
     static Scanner sc;
     public static void main(String[] args){
 
-        ThrowError error = new ThrowError();
-        Map<String, BankAccount> accounts = new HashMap<>();
+        BankSystem bankSystem = new BankSystem();
 
         sc = new Scanner(System.in);
         int count = Integer.parseInt(sc.nextLine());
@@ -22,102 +21,25 @@ public class Main  {
             String[] words = line.split(" ");
             switch (words[0]) {
                 case "Create":
-                    switch (words[2]) {
-                        case "Savings":
-                            String name = words[3];
-                            double sum = Double.parseDouble(words[4]);
-                            SavingsAccount account = new SavingsAccount(sum, name);
-                            accounts.put(name, account);
-                            break;
-                        case "Checking":
-                            name = words[3];
-                            sum = Double.parseDouble(words[4]);
-                            CheckingAccount account1 = new CheckingAccount(sum, name);
-                            accounts.put(name, account1);
-                            break;
-                        case "Business":
-                            name = words[3];
-                            sum = Double.parseDouble(words[4]);
-                            BusinessAccount account2 = new BusinessAccount(sum, name);
-                            accounts.put(name, account2);
-                            break;
-                        default:
-                            break;
-                    }
+                    bankSystem.CreateAccount(words[3], Double.parseDouble(words[4]), words[2]);
                     break;
                 case "Deposit":
-                    String nameDep = words[1];
-                    if (!accounts.containsKey(nameDep)){
-                        error.throwErrorstring("AccountDoesNotExist", nameDep);
-                    } else {
-                        double sum = Double.parseDouble(words[2]);
-                        accounts.get(nameDep).deposit(sum);
-                    }
+                    bankSystem.DepositAccount(words[1], Double.parseDouble(words[2]));
                     break;
                 case "Withdraw":
-                    String nameWidth = words[1];
-                    if (!accounts.containsKey(nameWidth)){
-                        error.throwErrorstring("AccountDoesNotExist", nameWidth);
-                    } else if(!accounts.get(nameWidth).isActive()) {
-                        error.throwErrorstring("AccountInActive", nameWidth);
-                    } else {
-                        double sum = Double.parseDouble(words[2]);
-                        if (accounts.get(nameWidth).sum < sum){
-                            error.throwErrorstring("AccoutInsuffisientFounds", nameWidth);
-                        } else {
-                            accounts.get(nameWidth).withdraw(sum);
-                        }
-                    }
+                    bankSystem.WithdrawAccount(words[1], Double.parseDouble(words[2]));
                     break;
                 case "Transfer":
-                    String nameTransfer = words[1];
-                    if (!accounts.containsKey(nameTransfer)){
-                        error.throwErrorstring("AccountDoesNotExist", nameTransfer);
-                    } else {
-                        String nameTransfer2 = words[2];
-                        if (!accounts.containsKey(nameTransfer2)){
-                            error.throwErrorstring("AccountDoesNotExist", nameTransfer2);
-                        } else if (!accounts.get(nameTransfer).isActive()) {
-                            error.throwErrorstring("AccountInActive", nameTransfer);
-                        } else if (accounts.get(nameTransfer).sum < Double.parseDouble(words[3])){
-                            error.throwErrorstring("AccoutInsuffisientFounds", nameTransfer);
-                        } else {
-                            double sum = Double.parseDouble(words[3]);
-                            accounts.get(nameTransfer).transfer(sum, accounts.get(nameTransfer2));
-                        }
-                    }
+                    bankSystem.TransferAccount(words[1], words[2], Double.parseDouble(words[3]));
                     break;
                 case "View":
-                    String nameView = words[1];
-                    if (!accounts.containsKey(nameView)){
-                        error.throwErrorstring("AccountDoesNotExist", nameView);
-                    } else {
-                        accounts.get(nameView).view();
-                    }
+                    bankSystem.ViewAccount(words[1]);
                     break;
                 case "Activate":
-                    String nameActive = words[1];
-                    if (!accounts.containsKey(nameActive)){
-                        error.throwErrorstring("AccountDoesNotExist", nameActive);
-                    } else {
-                        if (accounts.get(nameActive).isActive()){
-                            error.throwErrorstring("AccountIsAlreadyActivated", nameActive);
-                        } else {
-                            accounts.get(nameActive).activate();
-                        }
-                    }
+                    bankSystem.ActivateAccount(words[1]);
                     break;
                 case "Deactivate":
-                    String nameDeactive = words[1];
-                    if (!accounts.containsKey(nameDeactive)){
-                        error.throwErrorstring("AccountDoesNotExist", nameDeactive);
-                    } else {
-                        if (!accounts.get(nameDeactive).isActive()){
-                            error.throwErrorstring("AccountIsAlreadyDeactivated", nameDeactive);
-                        } else {
-                            accounts.get(nameDeactive).deactivate();
-                        }
-                    }
+                    bankSystem.DeactivateAccount(words[1]);
                     break;
                 default:
                     break;
@@ -130,7 +52,98 @@ public class Main  {
 
 class BankSystem{
 
-    
+    ThrowError error = new ThrowError();
+    Map<String, BankAccount> accounts = new HashMap<>();
+
+    public BankSystem(){}
+
+    public void CreateAccount(String name, double sum, String type){
+        switch (type) {
+            case "Savings":
+                SavingsAccount account = new SavingsAccount(sum, name);
+                accounts.put(name, account);
+                break;
+            case "Checking":
+                CheckingAccount account1 = new CheckingAccount(sum, name);
+                accounts.put(name, account1);
+                break;
+            case "Business":
+                BusinessAccount account2 = new BusinessAccount(sum, name);
+                accounts.put(name, account2);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void TransferAccount(String name, String name2, double sum){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else {
+            if (!accounts.containsKey(name2)){
+                error.throwErrorstring("AccountDoesNotExist", name2);
+            } else if (!accounts.get(name).isActive()) {
+                error.throwErrorstring("AccountInActive", name);
+            } else if (accounts.get(name).sum < sum){
+                error.throwErrorstring("AccoutInsuffisientFounds", name);
+            } else {
+                accounts.get(name).transfer(sum, accounts.get(name2));
+            }
+        }
+    }
+
+    public void DepositAccount(String name, double sum){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else {
+            accounts.get(name).deposit(sum);
+        }
+    }
+
+    public void WithdrawAccount(String name, double sum){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else if(!accounts.get(name).isActive()) {
+            error.throwErrorstring("AccountInActive", name);
+        } else {
+            if (accounts.get(name).sum < sum){
+                error.throwErrorstring("AccoutInsuffisientFounds", name);
+            } else {
+                accounts.get(name).withdraw(sum);
+            }
+        }
+    }
+
+    public void ViewAccount(String name){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else {
+            accounts.get(name).view();
+        }
+    }
+
+    public void ActivateAccount(String name){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else {
+            if (accounts.get(name).isActive()){
+                error.throwErrorstring("AccountIsAlreadyActivated", name);
+            } else {
+                accounts.get(name).activate();
+            }
+        }
+    }
+    public void DeactivateAccount(String name){
+        if (!accounts.containsKey(name)){
+            error.throwErrorstring("AccountDoesNotExist", name);
+        } else {
+            if (!accounts.get(name).isActive()){
+                error.throwErrorstring("AccountIsAlreadyDeactivated", name);
+            } else {
+                accounts.get(name).deactivate();
+            }
+        }
+    }
 
 }
 
