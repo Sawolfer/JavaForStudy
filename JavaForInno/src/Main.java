@@ -6,10 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-
-public class Main  {
+/**
+ * The Main class that initializes the bank system and executes the program.
+ */
+public class Main {
 
     static Scanner sc;
+    /**
+     * The main function that executes the banking system. It creates a BankSystem object,
+     * reads input from the user, and performs various operations on the bank accounts based
+     * on the user's input.
+     *
+     * @param  args  the command-line arguments passed to the program
+     */
     public static void main(String[] args){
 
         BankSystem bankSystem = new BankSystem();
@@ -48,8 +57,11 @@ public class Main  {
     }
 }
 
-//TODOsingleton pattern - creativial bankSystem
+// Singleton pattern - creational
 
+/**
+ * Represents a banking system that manages accounts, transactions, and customers.
+ */
 class BankSystem{
 
     ThrowError error = new ThrowError();
@@ -57,6 +69,13 @@ class BankSystem{
 
     public BankSystem(){}
 
+    /**
+     * Creates a new bank account based on the given type and adds it to the accounts map.
+     *
+     * @param  name   the name of the account holder
+     * @param  sum    the initial balance of the account
+     * @param  type   the type of the account (Savings, Checking, Business)
+     */
     public void CreateAccount(String name, double sum, String type){
         switch (type) {
             case "Savings":
@@ -76,69 +95,117 @@ class BankSystem{
         }
     }
 
+    /**
+     * Transfer the specified sum from one account to another if conditions are met.
+     *
+     * @param  name   the name of the source account holder
+     * @param  name2  the name of the target account holder
+     * @param  sum    the amount to transfer
+     */
     public void TransferAccount(String name, String name2, double sum){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else {
             if (!accounts.containsKey(name2)){
-                error.throwErrorstring("AccountDoesNotExist", name2);
+                error.setStrategy(new ErrorAccountDoesNotExist());
+                error.throwErrorString(name2);
             } else if (!accounts.get(name).isActive()) {
-                error.throwErrorstring("AccountInActive", name);
+                error.setStrategy(new ErrorAccountInActive());
+                error.throwErrorString(name);
             } else if (accounts.get(name).sum < sum){
-                error.throwErrorstring("AccoutInsuffisientFounds", name);
+                error.setStrategy(new ErrorAccoutInsuffisientFounds());
+                error.throwErrorString(name);
             } else {
                 accounts.get(name).transfer(sum, accounts.get(name2));
             }
         }
     }
 
+    /**
+     * Deposits the specified amount into the account with the given name.
+     *
+     * @param  name   the name of the account holder
+     * @param  sum    the amount to deposit
+     */
     public void DepositAccount(String name, double sum){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else {
             accounts.get(name).deposit(sum);
         }
     }
 
+    /**
+     * Withdraws the specified amount from the account with the given name.
+     *
+     * @param  name   the name of the account holder
+     * @param  sum    the amount to withdraw
+     */
     public void WithdrawAccount(String name, double sum){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else if(!accounts.get(name).isActive()) {
-            error.throwErrorstring("AccountInActive", name);
+            error.setStrategy(new ErrorAccountInActive());
+            error.throwErrorString(name);
         } else {
             if (accounts.get(name).sum < sum){
-                error.throwErrorstring("AccoutInsuffisientFounds", name);
+                error.setStrategy(new ErrorAccoutInsuffisientFounds());
+                error.throwErrorString(name);
             } else {
                 accounts.get(name).withdraw(sum);
             }
         }
     }
 
+    /**
+     * A function that views the account based on the given name.
+     *
+     * @param  name   the name of the account holder
+     */
     public void ViewAccount(String name){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else {
             accounts.get(name).view();
         }
     }
 
+    /**
+     * Activates the account with the given name if it exists and is not already active.
+     *
+     * @param  name  the name of the account to activate
+     */
     public void ActivateAccount(String name){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else {
             if (accounts.get(name).isActive()){
-                error.throwErrorstring("AccountIsAlreadyActivated", name);
+                error.setStrategy(new ErrorAccountIsAlreadyActivated());
+                error.throwErrorString(name);
             } else {
                 accounts.get(name).activate();
             }
         }
     }
+
+    /**
+     * Deactivates the account with the given name if it exists and is currently active.
+     *
+     * @param  name  the name of the account to deactivate
+     */
     public void DeactivateAccount(String name){
         if (!accounts.containsKey(name)){
-            error.throwErrorstring("AccountDoesNotExist", name);
+            error.setStrategy(new ErrorAccountDoesNotExist());
+            error.throwErrorString(name);
         } else {
             if (!accounts.get(name).isActive()){
-                error.throwErrorstring("AccountIsAlreadyDeactivated", name);
+                error.setStrategy(new ErrorAccountIsAlreadyDeactivated());
+                error.throwErrorString(name);
             } else {
                 accounts.get(name).deactivate();
             }
@@ -147,8 +214,11 @@ class BankSystem{
 
 }
 
-//TODO strategy pattern - behavioral
+//Decorator pattern - structural
 
+/**
+ * BankAccountVariables is an abstract class that contains common variables and methods for all bank accounts.
+ */
 abstract class BankAccountVariables {
     double transactionFee = 0.0;
     double sum;
@@ -157,11 +227,19 @@ abstract class BankAccountVariables {
     boolean active = true;
     List<String> operations = new ArrayList<>();
 }
-
+/**
+ * BankAccount is a parent class which represent all bank account actions and extends variables from BankAccountVariables
+ */
 class BankAccount extends BankAccountVariables {
 
     public BankAccount(){};
 
+    /**
+     * Constructs a new bank account with the specified initial balance and name.
+     *
+     * @param  sum   the initial balance
+     * @param  name  the name of the account holder
+     */
     public BankAccount(double sum, String name) {
         this.sum = sum;
         this.name = name;
@@ -172,11 +250,21 @@ class BankAccount extends BankAccountVariables {
         operations.add(String.format("Initial Deposit $%.3f", sum));
     }
 
+    /**
+     * Returns the active status of the object.
+     *
+     * @return  true if the object is active, false otherwise
+     */
     public boolean isActive(){
         return active;
     }
 
 
+    /**
+     * Withdraws the specified amount from the bank account.
+     *
+     * @param  amount  the amount to withdraw
+     */
     public void withdraw(double amount) {
         sum -= amount;
         String message = String.format("%s successfully withdrew $%.3f. ", name, amount - transactionFee * amount/100);
@@ -186,6 +274,11 @@ class BankAccount extends BankAccountVariables {
         operations.add(String.format("Withdrawal $%.3f", amount));
     }
 
+    /**
+     * Deposits the specified amount into the bank account.
+     *
+     * @param  amount  the amount to deposit (double)
+     */
     public void deposit(double amount){
         sum += amount;
         String message = String.format("%s successfully deposited $%.3f.", name, amount);
@@ -194,6 +287,12 @@ class BankAccount extends BankAccountVariables {
         operations.add(String.format("Deposit $%.3f", amount));
     }
 
+    /**
+     * Transfers the specified amount from this bank account to the target account.
+     *
+     * @param  amount        the amount to transfer
+     * @param  targeAccount  the target bank account to transfer the amount to
+     */
     public void transfer(double amount, BankAccount targeAccount) {
         sum -= amount;
         targeAccount.sum += (amount - transactionFee * amount/100);
@@ -204,13 +303,16 @@ class BankAccount extends BankAccountVariables {
         operations.add(String.format("Transfer $%.3f", amount));
     }
 
+    /**
+     * Prints a formatted message displaying the account details of the given account.
+     */
     public void view(){
         String message = String.format("%s's Account: ", name);
         message += String.format("Type: %s, ", type);
         message += String.format("Balance: $%.3f, ", sum);
         message += String.format("State: %s, ", active ? "Active" : "Inactive");
         message += ("Transactions: [");
-        
+
         for (int i = 0; i < operations.size(); i++){
             message +=  operations.get(i);
             if (i != operations.size() - 1){
@@ -220,13 +322,19 @@ class BankAccount extends BankAccountVariables {
         message += "].";
         System.out.println(message);
     }
-    
+
+    /**
+     * Deactivates the account by setting the active status to false.
+     */
     public void deactivate() {
         active = false;
         String message = String.format("%s's account is now deactivated.", name);
         System.out.println(message);
     }
 
+    /**
+     * Activates the account. Prints a message indicating that the account is now activated.
+     */
     public void activate(){
         active = true;
         String message = String.format("%s's account is now activated.", name);
@@ -234,14 +342,21 @@ class BankAccount extends BankAccountVariables {
     }
 
 }
-
+/**
+ * SavingsAccount is a subclass of BankAccount which represents a savings account.
+ */
 class SavingsAccount extends BankAccount{
 
     public SavingsAccount(){
         transactionFee = 1.5;
     }
-    
-    
+
+    /**
+     * Creates a new savings account with the given initial balance and name.
+     *
+     * @param sum
+     * @param name
+     */
     public SavingsAccount(double sum, String name) {
         super(sum, name);
         transactionFee = 1.5;
@@ -249,11 +364,20 @@ class SavingsAccount extends BankAccount{
     }
 }
 
+/**
+ * CheckingAccount is a subclass of BankAccount which represents a checking account.
+ */
 class CheckingAccount extends BankAccount{
 
     public CheckingAccount(){
         transactionFee = 2;
     }
+    /**
+     * Creates a new checking account with the given initial balance and name.
+     *
+     * @param sum
+     * @param name
+     */
     public CheckingAccount(double sum, String name) {
         super(sum, name);
         transactionFee = 2;
@@ -261,11 +385,20 @@ class CheckingAccount extends BankAccount{
     }
 }
 
+/**
+ * BusinessAccount is a subclass of BankAccount which represents a business account.
+ */
 class BusinessAccount extends BankAccount{
 
     public BusinessAccount(){
         transactionFee = 2.5;
     }
+    /**
+     * Creates a new business account with the given initial balance and name.
+     *
+     * @param sum
+     * @param name
+     */
     public BusinessAccount(double sum, String name) {
         super(sum, name);
         transactionFee = 2.5;
@@ -274,64 +407,94 @@ class BusinessAccount extends BankAccount{
 }
 
 
-//TODO Implement Errors such as one of pattern Facade - Structural
+// Strategy pattern - behavioral
 
-class ThrowError{
+/**
+ * ThrowError class that implements the ErrorHandlingStrategy interface.
+ * It throws an error message based on the error type and name of the account.
+ */
+class ThrowError {
+    private ErrorHandlingStrategy strategy;
 
-    public void throwErrorstring (String error, String name){
-        switch (error) {
-            case "AccountDoesNotExist":
-                ErrorAccountDoesNotExist errorAccountDoesNotExist = new ErrorAccountDoesNotExist();
-                errorAccountDoesNotExist.error(name);
-                break;
-            case "AccountInActive":
-                ErrorAccountInActive errorAccountInActive = new ErrorAccountInActive();
-                errorAccountInActive.error(name);
-                break;
-            case "AccoutInsuffisientFounds":
-                ErrorAccoutInsuffisientFounds errorAccoutInsuffisientFounds = new ErrorAccoutInsuffisientFounds();
-                errorAccoutInsuffisientFounds.error(name);
-                break;
-            case "AccountIsAlreadyActivated":
-                ErrorAccountIsAlreadyActivated errorAccountIsAlreadyActivated = new ErrorAccountIsAlreadyActivated();
-                errorAccountIsAlreadyActivated.error(name);
-                break;
-            case "AccountIsAlreadyDeactivated":
-                ErrorAccountIsAlreadyDeactivated errorAccountIsAlreadyDeactivated = new ErrorAccountIsAlreadyDeactivated();
-                errorAccountIsAlreadyDeactivated.error(name);
-                break;
-            default:
-                break;
-        }
+    /**
+     * Sets the error handling strategy.
+     *
+     * @param strategy
+     */
+    public void setStrategy(ErrorHandlingStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    /**
+     * Throws an error message based on the error type and name of the account.
+     *
+     * @param name
+     */
+
+    public void throwErrorString(String name) {
+        strategy.handle(name);
     }
 }
 
-class ErrorAccountDoesNotExist {
-    public void error(String name) {
+/**
+ * Interface for the error handling strategy.
+ */
+interface ErrorHandlingStrategy {
+    void handle(String name);
+}
+
+// ErrorAccountDoesNotExist class implementing ErrorHandlingStrategy
+class ErrorAccountDoesNotExist implements ErrorHandlingStrategy {
+
+    /**
+     * Prints an error message indicating that the account does not exist.
+     */
+    @Override
+    public void handle(String name) {
         System.out.println("Error: Account " + name + " does not exist.");
     }
 }
 
-class ErrorAccountInActive {
-    public void error(String name) {
+// ErrorAccountInActive class implementing ErrorHandlingStrategy
+class ErrorAccountInActive implements ErrorHandlingStrategy {
+    /**
+     * Prints an error message indicating that the account is inactive.
+     */
+    @Override
+    public void handle(String name) {
         System.out.println("Error: Account " + name + " is inactive.");
     }
 }
 
-class ErrorAccoutInsuffisientFounds {
-    public void error(String name) {
+// ErrorAccoutInsuffisientFounds class implementing ErrorHandlingStrategy
+class ErrorAccoutInsuffisientFounds implements ErrorHandlingStrategy {
+    /**
+     * Prints an error message indicating that the account has insufficient funds.
+     */
+    @Override
+    public void handle(String name) {
         System.out.println("Error: Insufficient funds for " + name + ".");
     }
 }
 
-class ErrorAccountIsAlreadyActivated {
-    public void error(String name) {
+// ErrorAccountIsAlreadyActivated class implementing ErrorHandlingStrategy
+class ErrorAccountIsAlreadyActivated implements ErrorHandlingStrategy {
+    /**
+     * Prints an error message indicating that the account is already activated.
+     */
+    @Override
+    public void handle(String name) {
         System.out.println("Error: Account " + name + " is already activated.");
     }
 }
 
-class ErrorAccountIsAlreadyDeactivated {
-    public void error(String name) {
+// ErrorAccountIsAlreadyDeactivated class implementing ErrorHandlingStrategy
+class ErrorAccountIsAlreadyDeactivated implements ErrorHandlingStrategy {
+    /**
+     * Prints an error message indicating that the account is already deactivated.
+     */
+    @Override
+    public void handle(String name) {
         System.out.println("Error: Account " + name + " is already deactivated.");
     }
 }
