@@ -1,0 +1,6 @@
+type=[deterministic]
+states=[a,b,c,v]
+alphabet=[to_a,to_b,bebe,rer,rar,ror,raror]
+initial=[c]
+accepting=[b,a,c]
+transitions=[c>to_a>v,b>bebe>a,v>bebe>b,a>rer>v,c>ror>a,c>to_a>a,a>to_a>v,v>rer>v,v>bebe>a,b>rar>v,b>rar>b,b>rer>v,v>ror>c,c>raror>v,a>bebe>c,v>to_a>c,v>ror>v,a>raror>c,c>rar>b,v>to_a>v,v>rar>b,v>rar>a,a>ror>c,c>rar>v,v>rar>c,b>raror>b,v>rer>b,a>ror>a,c>to_b>a,a>raror>v,b>ror>v,a>rer>b,b>rar>a,c>to_a>c,b>raror>a,a>rar>c,a>rar>b,v>raror>a,c>rer>b,v>raror>c,a>to_b>c,c>bebe>a,c>ror>b,v>rar>v,b>ror>b,c>rar>a,c>raror>b,c>to_b>b,c>rer>v,c>rer>c]

@@ -43,14 +43,20 @@ str = initial + ">" + alphabet[random.randint(0, len(alphabet)-1)] + ">" + state
 #         continue
 
 
+# for i in range(count):
+#     for j in range(len(alphabet)):
+#         str = states[random.randint(0, len(states)-1)] + ">" + alphabet[random.randint(0, len(alphabet)-1)] 
+#         if str not in trans :
+#             str +=  ">" + states[random.randint(0, len(states)-1)]
+#         if str not in trans :
+#             trans += str + ","
+
 for i in range(count):
     for j in range(len(alphabet)):
         str = states[random.randint(0, len(states)-1)] + ">" + alphabet[random.randint(0, len(alphabet)-1)] 
-        if str not in trans :
-            str +=  ">" + states[random.randint(0, len(states)-1)]
+        str +=  ">" + states[random.randint(0, len(states)-1)]
         if str not in trans :
             trans += str + ","
-
 
 
 trans = trans[:-1]

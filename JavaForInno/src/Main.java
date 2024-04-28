@@ -233,11 +233,11 @@ public class Main {
                 if (!visited[k]){
                     DFS(k, visited);
                 }
-            } else {break;}
+            } else {continue;}
         }
 
         for (int j = 0; j < visited.length; j++){
-            if (!visited[j]){
+            if (!visited[j]){;
                 return false;
             }
         }
