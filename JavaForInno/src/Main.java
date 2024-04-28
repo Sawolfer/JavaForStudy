@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -14,6 +15,8 @@ public class Main {
     static String[][][] transitions;
 
     static FSA fsa;
+
+    File file = new File("input.txt");
 
     public static void main(String[] args) {
         sc = new Scanner(System.in);
@@ -50,7 +53,7 @@ public class Main {
                         return;
                     }
                     if (!states.contains(initial)){
-                        System.out.println("E4: A state " + initial + " is not in the set of states\n");
+                        System.out.println("E4: A state " + initial + " is not in the set of states");
                     }
                     break;
                 case "accepting":
@@ -59,7 +62,7 @@ public class Main {
                     for (int j = 0; j < strAccepting.length; j++) {
                         accepting.add(strAccepting[j]);
                         if (!states.contains(strAccepting[j])){
-                            System.out.println("E4: A state " + strAccepting[j] + " is not in the set of states\n");
+                            System.out.println("E4: A state " + strAccepting[j] + " is not in the set of states");
                         }
                     }
                     if (accepting.size() == 0){
@@ -75,12 +78,12 @@ public class Main {
                         String[] strTransition = strTransitions[j].split(">");
                         
                         if (!states.contains(strTransition[0])){
-                            System.out.println("E4: A state " + strTransition[0] + " is not in the set of states\n");
+                            System.out.println("E4: A state " + strTransition[0] + " is not in the set of states");
                             return;
                         }
 
                         if (!states.contains(strTransition[2])){
-                            System.out.println("E4: A state " + strTransition[2] + " is not in the set of states\n");
+                            System.out.println("E4: A state " + strTransition[2] + " is not in the set of states");
                             return;
                         }
                         
@@ -95,14 +98,14 @@ public class Main {
 
                         if (type == Type.DETERMINISTIC){
                             if (transitions[indFrom][indTo].length > 1){
-                                System.out.println("E7: FSA is non-deterministic\n");
+                                System.out.println("E7: FSA is non-deterministic");
                                 return;
                             }
                         }
                     }
                     break;
                 default:
-                    System.out.println("E1: Input file is malformed\n");
+                    System.out.println("E1: Input file is malformed");
                     return;
                 }
             }   
@@ -111,7 +114,7 @@ public class Main {
                 visited[j] = false;
             }
             if (!DFS(0, visited)){
-                System.out.println("E6: Some states are disjoint\n");
+                System.out.println("E6: Some states are disjoint");
                 return;
             }
             fsa = new FSA(states, alphabet, initial, accepting, transitions);
