@@ -1,47 +1,58 @@
 import random
-states = ["off", "on"]
-alphabet = ["turn_on", "turn_off"]
+states = ["a", "b", "c", "v"]
+alphabet = ["to_a", "to_b", "bebe", "rer", "rar", "ror", "raror"]
 str=''
 file = open("input.txt", "w")
 
-count = 5
+count = 10
 
 file.write("type=[deterministic]\n")
 file.write("states=[")
-for i in range(random.randint(1, len(states))):
-    for j in range(random.randint(1, len(states))):
-        file.write(states[random.randint(0, len(states)-1)])
+for i in range(len(states)):
+    file.write(states[i])
+    if i != len(states)-1:
         file.write(",")
-file.write(states[random.randint(0, len(states)-1)] + "]\n")
+file.write( "]\n")
 
 file.write("alphabet=[")
-for i in range(random.randint(1, len(alphabet))):
-    for j in range(random.randint(1, len(alphabet))):
-        file.write(alphabet[random.randint(0, len(alphabet)-1)])
+for i in range(len(alphabet)):
+    file.write(alphabet[i])
+    if i != len(alphabet)-1:
         file.write(",")
-file.write(alphabet[random.randint(0, len(alphabet)-1)] + "]\n")
+file.write("]\n")
 
-file.write("initial=[" + states[random.randint(0, len(states)-1)] + "]\n")
+initial = states[random.randint(0, len(states)-1)]
+
+file.write("initial=[" + initial + "]\n")
 file.write("accepting=[")
-for i in range(random.randint(1, len(states))):
-    for j in range(random.randint(1, len(states))):
-        file.write(states[random.randint(0, len(states)-1)])
-        file.write(",")
+for i in range(2):
+    file.write(states[random.randint(0, len(states)-1)])
+    file.write(",")
 file.write(states[random.randint(0, len(states)-1)] + "]\n")
 
+trans = ''
 file.write("transitions=[")
-for i in range(random.randint(1, count)):
-    for j in range(random.randint(1, count)):
-        file.write(states[random.randint(0, len(states)-1)])
-        file.write(">")
-        file.write(alphabet[random.randint(0, len(alphabet)-1)])
-        file.write(">")
-        file.write(states[random.randint(0, len(states)-1)])
-        file.write(",")
-file.write(states[random.randint(0, len(states)-1)])
-file.write(">")
-file.write(alphabet[random.randint(0, len(alphabet)-1)])
-file.write(">")
-file.write(states[random.randint(0, len(states)-1)])
-file.write("]\n")
+str = initial + ">" + alphabet[random.randint(0, len(alphabet)-1)] + ">" + states[random.randint(0, len(states)-1)] + ","
+# for i in range(count):
+#     str = states[random.randint(0, len(states)-1)] + ">" + alphabet[random.randint(0, len(alphabet)-1)] 
+#     if str not in trans :
+#         str +=  ">" + states[random.randint(0, len(states)-1)]
+#     if str not in trans:
+#         trans += str + ","
+#     else :
+#         continue
+
+
+for i in range(count):
+    for j in range(len(alphabet)):
+        str = states[random.randint(0, len(states)-1)] + ">" + alphabet[random.randint(0, len(alphabet)-1)] 
+        if str not in trans :
+            str +=  ">" + states[random.randint(0, len(states)-1)]
+        if str not in trans :
+            trans += str + ","
+
+
+
+trans = trans[:-1]
+file.write(trans + "]\n")
 file.close()
