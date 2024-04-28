@@ -1,0 +1,6 @@
+type=[deterministic]
+states=[off,on,on,off,off]
+alphabet=[turn_off,turn_on]
+initial=[on]
+accepting=[off,on,on,on]
+transitions=[on>turn_off>on,on>turn_on>off]
