@@ -6,9 +6,9 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner sc;
-    static Container container;
+    static Container container = new Container();
+    static CommandInvoker invoker = new CommandInvoker(container);
     public static void main(String[] args) {
-        container = new Container();
         sc = new Scanner(System.in);
         while (true) {
             String command = sc.nextLine();
@@ -17,25 +17,25 @@ public class Main {
                 case "end":
                     return;
                 case "createBook":
-                    container.createBook(parts[1], parts[2], parts[3]);
+                    invoker.executeCommand(new createBookCommand(container, parts[1], parts[2], parts[3]));
                     break;
                 case "createUser":
-                    container.createUser(parts[2], parts[1]);
+                    invoker.executeCommand(new createUserCommand(container, parts[2], parts[1]));
                     break;
                 case "readBook":
-                    container.readBook(parts[1], parts[2]);
+                    invoker.executeCommand(new readBookCommand(container, parts[1], parts[2]));
                     break;
                 case "listenBook":
-                    container.listenBook(parts[1], parts[2]);
+                    invoker.executeCommand(new listenBookCommand(container, parts[1], parts[2]));
                     break;
                 case "subscribe":
-                    container.subscribeUser(parts[1]);
+                    invoker.executeCommand(new subscribeCommand(container, parts[1]));
                     break;
                 case "unsubscribe":
-                    container.unsubscribeUser(parts[1]);
+                    invoker.executeCommand(new unsubscribeCommand(container, parts[1]));
                     break;
                 case "updatePrice":
-                    container.updatePrice(parts[1], parts[2]);
+                    invoker.executeCommand(new updatePriceCommand(container, parts[1], parts[2]));
                     break;
                 default:
                     return;
@@ -48,12 +48,54 @@ public class Main {
 class Entities{}
 
 
+
+interface BookType{
+    public void read();
+    public void listen();
+}
+
+class Textual implements BookType{
+    @Override
+    public void read() {
+        System.out.println("Reading");
+    }
+    @Override
+    public void listen() {
+        System.out.println("It can not be listened");
+    }
+}
+
+class Audio implements BookType{
+    @Override
+    public void read() {
+        System.out.println("It can not be readed");
+    }
+    @Override
+    public void listen() {
+        System.out.println("Listening");
+    }
+}
+
+class Multype implements BookType{
+    @Override
+    public void read() {
+        System.out.println("Reading");
+    }
+    @Override
+    public void listen() {
+        System.out.println("Listening");
+    }
+}
+
 class Book extends Entities{
+    private BookType type;
     private String title;
     private String author;
     private String price;
 
-    public Book(String title, String author, String price) {
+
+    public Book(String title, String author, String price, BookType type) {
+        this.type = type;
         this.title = title;
         this.author = author;
         this.price = price;
@@ -101,19 +143,40 @@ class Premium implements UserType {
     }
 }
 
+//Factory pattern - Creational
+
+class Factory{
+    public User createUser(String name, String type) {
+        if (type.equals("standard")) {
+            User user = new User(name, new Standard());
+            return user;
+        } else if (type.equals("premium")) {
+            User user = new User(name, new Premium());
+            return user;
+        }
+        throw new IllegalArgumentException("Invalid user type");
+    }
+
+    public Book createBook(String name, String author, String type, String price) {
+        if (type.equals("textual")) {
+            return new Book(name, author, price, new Textual());
+        } else if (type.equals("audio")) {
+            return new Book(name, author, price, new Audio());
+        } else if (type.equals("multype")) {
+            return new Book(name, author, price, new Multype());
+        }
+        throw new IllegalArgumentException("Invalid book type");
+    }
+}
+
 class User extends Entities{
-    
     private UserType type;
     private String name;
     private boolean subscribed = false;
 
-    public User(String name, String type) {
+    public User(String name, UserType type) {
         this.name = name;
-        if (type.equals("standard")) {
-            this.type = new Standard();
-        } else if (type.equals("premium")) {
-            this.type = new Premium();
-        }
+        this.type = type;
     }
     public String getName() {
         return name;
@@ -151,6 +214,8 @@ class Container{
     HashMap<String, User> users = new HashMap<>();
     List<User> subUsers = new ArrayList<>();
 
+    Factory factory = new Factory();
+
     public Container() {}
 
     public void createBook(String title, String author, String price){
@@ -158,7 +223,8 @@ class Container{
             System.out.println("Book already exists");
             return;
         }
-        this.books.put(title, new Book(title, author, price));
+        Book book = factory.createBook(title, author, "multype", price);
+        this.books.put(title, book);
     }
 
     public void createUser(String name, String type){
@@ -166,7 +232,8 @@ class Container{
             System.out.println("User already exists");
             return;
         }
-        this.users.put(name, new User(name, type));
+        User user = factory.createUser(name, type);
+        this.users.put(name, user);
     }
 
     public void readBook(String name, String title){
@@ -215,4 +282,135 @@ class Container{
         }
     }
 
+    public void executeCommand(Command command) {
+        command.execute();
+    }
+}
+
+//Command pattern - Behavioral
+
+interface Command{
+    public void execute();
+}
+
+class CommandInvoker {
+    private final Container container;
+
+    public CommandInvoker(Container container) {
+        this.container = container;
+    }
+
+    public void executeCommand(Command command) {
+        container.executeCommand(command);
+    }
+}
+
+class createBookCommand implements Command{
+    private Container container;
+    private String title;
+    private String author;
+    private String price;
+
+    public createBookCommand(Container container, String title, String author, String price) {
+        this.container = container;
+        this.title = title;
+        this.author = author;
+        this.price = price;
+    }
+    @Override
+    public void execute() {
+        container.createBook(title, author, price);
+    }
+}
+
+class createUserCommand implements Command{
+    private Container container;
+    private String name;
+    private String type;
+
+    public createUserCommand(Container container, String name, String type) {
+        this.container = container;
+        this.name = name;
+        this.type = type;
+    }
+    @Override
+    public void execute() {
+        container.createUser(name, type);
+    }
+}
+
+class readBookCommand implements Command{
+    private Container container;
+    private String name;
+    private String title;
+
+    public readBookCommand(Container container, String name, String title) {
+        this.container = container;
+        this.name = name;
+        this.title = title;
+    }
+    @Override
+    public void execute() {
+        container.readBook(name, title);
+    }
+}
+
+class listenBookCommand implements Command{
+    private Container container;
+    private String name;
+    private String title;
+
+    public listenBookCommand(Container container, String name, String title) {
+        this.container = container;
+        this.name = name;
+        this.title = title;
+    }
+    @Override
+    public void execute() {
+        container.listenBook(name, title);
+    }
+}
+
+class subscribeCommand implements Command{
+    private Container container;
+    private String name;
+
+    public subscribeCommand(Container container, String name) {
+        this.container = container;
+        this.name = name;
+    }
+    @Override
+    public void execute() {
+        container.subscribeUser(name);
+    }
+}
+
+class unsubscribeCommand implements Command{
+    private Container container;
+    private String name;
+
+    public unsubscribeCommand(Container container, String name) {
+        this.container = container;
+        this.name = name;
+    }
+    @Override
+    public void execute() {
+        container.unsubscribeUser(name);
+    }
+}
+
+class updatePriceCommand implements Command{
+    private Container container;
+    private String title;
+    private String price;
+
+    public updatePriceCommand(Container container, String title, String price) {
+        this.container = container;
+        this.title = title;
+        this.price = price;
+    }
+    @Override
+    public void execute() {
+        container.updatePrice(title, price);
+    }
 }
